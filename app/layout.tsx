@@ -3,6 +3,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Inter as FontSans } from "next/font/google";
 import { Providers } from "@/components/providers/providers";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -23,11 +24,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased flex flex-col items-center",
+          "min-h-screen min-w-screen bg-background font-sans antialiased flex justify-center",
           fontSans.variable
         )}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="w-screen flex flex-col max-w-[1400px] items-center">
+            <nav className="w-full flex items-center justify-end py-3">
+              <ThemeToggle />
+            </nav>
+            {children}
+          </div>
+        </Providers>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { ThemeProvider } from "./theme-provider";
 import { wagmiConfig, chains } from "@/lib/web3/wallet-connection";
 import { WagmiConfig } from "wagmi";
 import { RainbowKitProvider, midnightTheme } from "@rainbow-me/rainbowkit";
+import { WalletInputProvider } from "./wallet-input-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -14,7 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <WalletInputProvider>{children}</WalletInputProvider>
         </ThemeProvider>
       </RainbowKitProvider>
     </WagmiConfig>

@@ -1,8 +1,7 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { OwnedNft } from "alchemy-sdk";
-import { getOwned, captureScreenshot, cn } from "@/lib/utils";
-import { useAccount } from "wagmi";
+import { captureScreenshot } from "@/lib/utils";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -10,17 +9,22 @@ import { Icons } from "./icons";
 import { createSortFunction } from "@/lib/sort-factory";
 import { SortAttribute, attributes } from "@/lib/attributes";
 import { ScreenshotDialog } from "./screenshot-dialog";
+import { useWalletInput } from "./providers/wallet-input-provider";
 
 export function DisplayOwned() {
   const gridRef = useRef<HTMLDivElement | null>(null);
-  const { address } = useAccount();
+  const { getAddresses } = useWalletInput();
+  let allAddresses = getAddresses();
+  const owned = allAddresses
+    .map((obj) =>
+      obj.owned.map((value) => ({ ownedAddress: obj.address, ...value }))
+    )
+    .reduce((acc, arr) => acc.concat(arr), []);
 
   const [capturing, setCapturing] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [screenshotUrl, setScreenshotUrl] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [owned, setOwned] = useState<OwnedNft[]>([]);
   const [sortType, setSortType] = useState<SortAttribute>("background");
   const [numColumns, setNumColumns] = useState<number>(5);
   const [gridSpacing, setGridSpacing] = useState<number>(1);
@@ -36,12 +40,10 @@ export function DisplayOwned() {
   const toggleDialog = () => setOpenDialog(!open);
 
   const handleCaptureClick = async () => {
-    console.log("here");
     setCapturing(true);
     try {
       const screenshotDataUrl = await captureScreenshot(gridRef);
       if (screenshotDataUrl) {
-        // Display or use the screenshot data URL as needed
         console.log("Screenshot captured:", screenshotDataUrl);
         setScreenshotUrl(screenshotDataUrl);
         setOpenDialog(true);
@@ -54,39 +56,20 @@ export function DisplayOwned() {
   };
 
   const handleColumnChange = (val: any) => {
-    console.log({ val });
     if (!val || val.length === 0) return;
     setNumColumns(val[0]);
   };
 
-  useEffect(() => {
-    if (!address) {
-      setOwned([]);
-      return;
-    }
-    (async () => {
-      setLoading(true);
-      let data = await getOwned(address);
-      setOwned(data);
-      setLoading(false);
-      console.log({ data });
-    })();
-  }, [address]);
-
   const sortFunction = createSortFunction(sortType, attributes);
   const sortedOwned = [...owned].sort(sortFunction);
-
-  if (!address) {
-    return null;
-  }
 
   return (
     <>
       <div className="w-full flex flex-col items-center gap-4">
         <div className="flex flex-col gap-4 items-center">
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col gap-2 items-center">
             <span className="font-bold">
-              <span>Owned Amount: {owned?.length || 0}</span>
+              <span>Total Amount: {owned?.length || 0}</span>
             </span>
             <Button onClick={handleCaptureClick} className="flex items-center">
               {capturing ? (
