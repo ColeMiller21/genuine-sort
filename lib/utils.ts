@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Alchemy, Network } from "alchemy-sdk";
 import { toPng } from "html-to-image";
+import { WalletAddressData } from "@/components/providers/wallet-input-provider";
 
 const MAINNET_KEY = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const GU_ADDRESS = "0x209e639a0EC166Ac7a1A4bA41968fa967dB30221";
@@ -45,4 +46,22 @@ export const captureScreenshot = async (
   } catch (error) {
     console.error("Error capturing screenshot:", error);
   }
+};
+
+const STORAGE_KEY = "addressData";
+
+export const storeDataInStorage = (addressData: WalletAddressData[]) => {
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(addressData));
+  }
+};
+
+export const clearStorage = () => {
+  localStorage.removeItem(STORAGE_KEY);
+};
+
+export const getDataFromStorage = () => {
+  let data = localStorage.getItem(STORAGE_KEY);
+  if (!data) return [];
+  return JSON.parse(data);
 };

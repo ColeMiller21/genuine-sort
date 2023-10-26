@@ -1,9 +1,9 @@
 // WalletInputContext.tsx
 import { createContext, useContext, useState, ReactNode } from "react";
-import { getOwned } from "@/lib/utils";
+import { getOwned, getDataFromStorage } from "@/lib/utils";
 
 // Define the shape of the wallet address data
-interface WalletAddressData {
+export interface WalletAddressData {
   address: string;
   owned: any[]; // Define the correct type for the 'owned' property
   ownedCount: number;
@@ -13,6 +13,7 @@ interface WalletAddressData {
 interface WalletInputContextType {
   addWalletAddress: (address: string) => Promise<WalletAddressData | null>;
   getAddresses: () => WalletAddressData[];
+  resetAddresses: () => void;
   displayGrid: boolean;
   toggleGridDisplay: () => void;
 }
@@ -37,7 +38,7 @@ interface WalletInputProviderProps {
 
 export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const [walletAddresses, setWalletAddresses] = useState<WalletAddressData[]>(
-    []
+    getDataFromStorage()
   );
   const [displayGrid, setDisplayGrid] = useState<boolean>(false);
 
@@ -61,6 +62,10 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     }
   };
 
+  const resetAddresses = () => {
+    setWalletAddresses([]);
+  };
+
   const getAddresses = () => {
     return walletAddresses;
   };
@@ -72,6 +77,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         getAddresses,
         displayGrid,
         toggleGridDisplay,
+        resetAddresses,
       }}
     >
       {children}

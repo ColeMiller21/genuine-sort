@@ -1,6 +1,8 @@
 "use client";
 import { useWalletInput } from "./providers/wallet-input-provider";
+import { storeDataInStorage, clearStorage } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { Icons } from "@/components/icons";
 import {
   Table,
   TableBody,
@@ -11,16 +13,31 @@ import {
 } from "@/components/ui/table";
 
 export function WalletInputTable() {
-  const { getAddresses, toggleGridDisplay } = useWalletInput();
+  const { getAddresses, toggleGridDisplay, resetAddresses } = useWalletInput();
   let allAddresses = getAddresses();
 
   if (!allAddresses || allAddresses.length === 0) {
     return null;
   }
 
+  function handleGoToDisplay() {
+    storeDataInStorage(allAddresses);
+    toggleGridDisplay();
+  }
+
+  function handleReset() {
+    clearStorage();
+    resetAddresses();
+  }
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      <Button onClick={toggleGridDisplay}>Go to Display</Button>
+      <div className="flex items-center gap-4">
+        <Button onClick={handleGoToDisplay}>Go to Display</Button>
+        <Button onClick={handleReset} className="flex items-center gap-1">
+          <Icons.reset className="w-4 h-4" />
+          <span>Reset</span>
+        </Button>
+      </div>
       <Table className="w-full lg:w-[80%] mx-auto">
         <TableHeader>
           <TableRow>

@@ -5,6 +5,8 @@ import {
   Wallet,
   Loader2,
   Camera,
+  ArrowLeft,
+  RotateCcw,
 } from "lucide-react";
 
 export const Icons = {
@@ -13,6 +15,8 @@ export const Icons = {
   wallet: Wallet,
   moon: Moon,
   camera: Camera,
+  arrowLeft: ArrowLeft,
+  reset: RotateCcw,
   discord: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -52,7 +56,6 @@ export const Icons = {
       </g>
     </svg>
   ),
-
   x: (props: LucideProps) => (
     <svg
       {...props}
