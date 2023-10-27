@@ -1,5 +1,11 @@
 // WalletInputContext.tsx
-import { createContext, useContext, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 import { getOwned, getDataFromStorage } from "@/lib/utils";
 
 // Define the shape of the wallet address data
@@ -38,7 +44,7 @@ interface WalletInputProviderProps {
 
 export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const [walletAddresses, setWalletAddresses] = useState<WalletAddressData[]>(
-    getDataFromStorage()
+    []
   );
   const [displayGrid, setDisplayGrid] = useState<boolean>(false);
 
@@ -69,6 +75,12 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const getAddresses = () => {
     return walletAddresses;
   };
+
+  useEffect(() => {
+    if (window) {
+      setWalletAddresses(getDataFromStorage());
+    }
+  }, []);
 
   return (
     <WalletInputContext.Provider
