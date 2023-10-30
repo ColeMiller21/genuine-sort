@@ -47,18 +47,13 @@ export function ScreenshotDialog({
             </div>
             <div className="flex flex-col lg:flex-row gap-4">
               <Button onClick={handleDownloadClick}>Download Screenshot</Button>
-              <Button
+              {/* <Button
                 onClick={handleTwitterShare}
                 className="flex items-center gap-1"
               >
-                {/* <a
-                  href={generateTwitterShareUrl(screenshotUrl)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                > */}
+               
                 <span>Share on</span> <Icons.x className="w-6 h-6" />
-                {/* </a> */}
-              </Button>
+              </Button> */}
             </div>
           </div>
         )}
