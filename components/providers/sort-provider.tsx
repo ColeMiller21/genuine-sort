@@ -10,14 +10,17 @@ import {
   getSortTypes,
   AttributeType,
   defaultAttributes,
+  clonedDefaults,
   SortAttribute,
   filterTraitsWithIncludeTrue,
   Attribute,
+  toggleAllTraits,
 } from "@/lib/attributes";
 import { OwnedNft } from "alchemy-sdk";
 import { createSortFunction } from "@/lib/sort-factory";
 import { useWalletInput } from "./wallet-input-provider";
 import { formatTrait, formatTraitType } from "@/lib/utils";
+import { cloneDeep } from "lodash";
 export interface SortType {
   value: string;
   label: string;
@@ -45,8 +48,7 @@ export function useSorter(): SorterContextType {
 export function SorterProvider({ children }: { children: React.ReactNode }) {
   const { ownedData, setOwnedData, defaultOwnedData } = useWalletInput();
   const sortTypes = getSortTypes();
-  const [attributes, setAttributes] =
-    useState<AttributeType>(defaultAttributes);
+  const [attributes, setAttributes] = useState<AttributeType>(clonedDefaults);
   const [primarySort, setPrimarySort] = useState<SortAttribute>(
     sortTypes[0].value as SortAttribute
   );
@@ -61,35 +63,24 @@ export function SorterProvider({ children }: { children: React.ReactNode }) {
         let found = attributesToCheck.find(
           (item: Attribute) => item.attr === lookupValue
         );
-        // console.log({
-        //   lookupTrait,
-        //   lookupValue,
-        //   attributesToCheck,
-        //   found,
-        //   include: found.include,
-        // });
-        return found.include;
+        return found?.include || false;
       });
       return shouldInclude;
     });
   }
 
-  const sortData = () => {
-    let filtered = filterOwnedItems(defaultOwnedData, attributes);
-    const sortFunction = createSortFunction(primarySort, attributes);
+  const sortData = (attr?: AttributeType) => {
+    let filtered = filterOwnedItems(defaultOwnedData, attr || attributes);
+    const sortFunction = createSortFunction(primarySort, attr || attributes);
     const sortedOwned = [...filtered].sort(sortFunction);
-    // console.log({
-    //   filteredLength: filtered.length,
-    //   sortedOwned,
-    //   primarySort,
-    //   attributes,
-    // });
     setOwnedData(sortedOwned);
   };
 
   const resetSortAndFilters = () => {
+    let a = toggleAllTraits(defaultAttributes, true);
+    setAttributes(a);
     setOwnedData([...defaultOwnedData]);
-    setAttributes({ ...defaultAttributes });
+    sortData(a);
   };
 
   useEffect(() => {

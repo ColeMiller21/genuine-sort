@@ -1,5 +1,11 @@
 "use client";
-import { Dispatch, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+  MutableRefObject,
+} from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,23 +19,20 @@ import { useSorter } from "../providers/sort-provider";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "../ui/button";
 import { Icons } from "../icons";
-import {
-  Attribute,
-  AttributeType,
-  defaultAttributes,
-  toggleAllTraits,
-} from "@/lib/attributes";
+import { Attribute, AttributeType } from "@/lib/attributes";
 import { Checkbox } from "@/components/ui/checkbox";
-import { cloneDeep } from "lodash";
 
-export function FilterDialog() {
-  const { primarySort, attributes, setAttributes, resetSortAndFilters } =
-    useSorter();
+export function FilterDialog({
+  filteredAttributes,
+  setFilteredAttributes,
+  resetFilters,
+}: {
+  filteredAttributes: AttributeType;
+  setFilteredAttributes: Dispatch<SetStateAction<AttributeType>>;
+  resetFilters: () => void;
+}) {
+  const { primarySort, attributes, setAttributes } = useSorter();
   const [open, setOpen] = useState<boolean>(false);
-  const clonedAttributes = cloneDeep(attributes);
-
-  const [filteredAttributes, setFilteredAttributes] =
-    useState<AttributeType>(clonedAttributes);
   const firstAttributeKey = Object.keys(filteredAttributes)[0];
   const [activeView, setActiveView] = useState<string>(firstAttributeKey);
   const [selectAll, setSelectAll] = useState<boolean>(false);
@@ -57,12 +60,8 @@ export function FilterDialog() {
     setSelectAll(false);
   };
 
-  const resetFilters = () => {
-    let resetFilters = { ...filteredAttributes };
-    console.log({ resetFilters });
-    resetFilters = toggleAllTraits(resetFilters, true);
-    setFilteredAttributes(resetFilters);
-
+  const handleReset = () => {
+    resetFilters();
     setSelectAll(false);
   };
 
@@ -155,7 +154,7 @@ export function FilterDialog() {
             <Button
               variant={"destructive"}
               className="flex gap-2"
-              onClick={resetFilters}
+              onClick={handleReset}
             >
               <Icons.reset className="w-4 h-4" />
               Reset

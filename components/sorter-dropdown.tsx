@@ -49,7 +49,6 @@ export function SorterDropdown() {
                 key={sortType.value}
                 value={sortType.value}
                 onSelect={(currentValue) => {
-                  console.log(currentValue);
                   setPrimarySort(currentValue as SortAttribute);
                   setOpen(false);
                 }}

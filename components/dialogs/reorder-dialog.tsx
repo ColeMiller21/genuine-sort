@@ -15,7 +15,9 @@ import { Attribute } from "@/lib/attributes";
 
 export function ReorderDialog() {
   const { primarySort, attributes, setAttributes } = useSorter();
-  const attributesToSort = attributes[primarySort];
+  const attributesToSort = attributes[primarySort].filter(
+    (item: Attribute) => item.include
+  );
   const [open, setOpen] = useState<boolean>(false);
 
   const handleReorderSubmit = (newStringOrderArr: string[]) => {

@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTheme } from "next-themes";
 import { SortAttribute } from "@/lib/attributes";
 import { useWalletInput } from "./providers/wallet-input-provider";
@@ -18,6 +18,9 @@ import {
 } from "@/components/ui/accordion";
 import { ReorderDialog } from "./dialogs/reorder-dialog";
 import { useSorter } from "./providers/sort-provider";
+import { cloneDeep } from "lodash";
+import { AttributeType } from "@/lib/attributes";
+import { toggleAllTraits } from "@/lib/attributes";
 
 type customizeDefaultsType = {
   sortType: SortAttribute;
@@ -29,7 +32,7 @@ type customizeDefaultsType = {
 
 export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
   const { theme, systemTheme } = useTheme();
-  const { resetSortAndFilters } = useSorter();
+  const { resetSortAndFilters, attributes } = useSorter();
   const customizeDefaults: customizeDefaultsType = {
     sortType: "backgrounds",
     numColumns: 5,
@@ -52,6 +55,9 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
   const [selectedBorderColor, setSelectedBorderColor] = useState<
     string | undefined
   >(customizeDefaults.borderColor);
+  const clonedAttributes = cloneDeep(attributes);
+  const [filteredAttributes, setFilteredAttributes] =
+    useState<AttributeType>(clonedAttributes);
 
   const gridStyle = {
     display: "grid",
@@ -86,6 +92,17 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
     setGridSpacing(customizeDefaults.gridSpacing);
     setSelectedBorderColor(customizeDefaults.bgColor);
     setSelectedBGColor(customizeDefaults.bgColor);
+  };
+
+  const handleReset = () => {
+    resetFilters();
+    resetSortAndFilters();
+  };
+
+  const resetFilters = () => {
+    let resetFilters = { ...filteredAttributes };
+    resetFilters = toggleAllTraits(resetFilters, true);
+    setFilteredAttributes(resetFilters);
   };
 
   useEffect(() => {
@@ -166,12 +183,13 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
                   <SorterDropdown />
                   <ReorderDialog />
                 </div>
-                <FilterDialog />
+                <FilterDialog
+                  filteredAttributes={filteredAttributes}
+                  resetFilters={resetFilters}
+                  setFilteredAttributes={setFilteredAttributes}
+                />
               </div>
-              <Button
-                className="flex items-center gap-2"
-                onClick={resetSortAndFilters}
-              >
+              <Button className="flex items-center gap-2" onClick={handleReset}>
                 <Icons.reset className="h-4 w-4" />
                 Reset Grid
               </Button>

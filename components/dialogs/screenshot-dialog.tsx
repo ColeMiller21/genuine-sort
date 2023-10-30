@@ -29,7 +29,6 @@ export function ScreenshotDialog({
   const handleTwitterShare = () => {
     if (!screenshotUrl) return;
     const twitterShareUrl = generateTwitterShareUrl(screenshotUrl);
-    console.log(twitterShareUrl);
     window.open(twitterShareUrl, "_blank");
     // window.open("www.google.com", "_blank");
   };

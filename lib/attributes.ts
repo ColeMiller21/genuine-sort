@@ -1,3 +1,5 @@
+import { cloneDeep } from "lodash";
+
 export const defaultAttributes = {
   backgrounds: [
     { attr: "Crimson", index: 1, include: true },
@@ -87,6 +89,8 @@ export const defaultAttributes = {
   ],
   // traitCount: [],
 };
+
+export const clonedDefaults = cloneDeep(defaultAttributes);
 
 export type AttributeType = typeof defaultAttributes & {
   [key: string]: { attr: string; index: number; include: boolean }[];
