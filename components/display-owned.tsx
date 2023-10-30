@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import { captureScreenshot } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Icons } from "./icons";
-import { ScreenshotDialog } from "./screenshot-dialog";
+import { ScreenshotDialog } from "./dialogs/screenshot-dialog";
 import { useWalletInput } from "./providers/wallet-input-provider";
 import { DisplayGrid } from "./display-grid";
 

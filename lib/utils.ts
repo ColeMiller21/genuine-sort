@@ -16,12 +16,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatIPFS(uri: string) {
-  const cid = uri.replace("ipfs://", "");
-  const imageUrl = `https://ipfs.io/ipfs/${cid}`;
-  return imageUrl;
-}
-
 export async function getOwned(address: string) {
   let res = await alchemy.nft.getNftsForOwner(address, {
     contractAddresses: [GU_ADDRESS],
@@ -40,8 +34,10 @@ export const captureScreenshot = async (
     return;
   }
   try {
-    const dataUrl = await toPng(divRef.current);
-    console.log("Got Screenshot");
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+    const dataUrl = await toPng(divRef.current, { includeQueryParams: true });
     return dataUrl;
   } catch (error) {
     console.error("Error capturing screenshot:", error);
@@ -65,3 +61,47 @@ export const getDataFromStorage = () => {
   if (!data) return [];
   return JSON.parse(data);
 };
+
+export function generateTwitterShareUrl(dataUrl: string) {
+  const websiteUrl = "https://genuine-sort.vercel.app/";
+  const encodedDataUrl = encodeURIComponent(dataUrl);
+  const encodedWebsiteUrl = encodeURIComponent(websiteUrl);
+  const tweetText = `Just sorted my Genuine Undead! %0a%0a${encodedDataUrl}%0a%0a#GenuineUndead #RiseAndShine`;
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+  return twitterShareUrl;
+}
+
+export function formatTrait(trait: string) {
+  let lowercase = trait.toLowerCase();
+  return lowercase.charAt(0).toUpperCase() + lowercase.slice(1);
+}
+
+export function formatTraitType(trait_type: string) {
+  let rv;
+  switch (trait_type) {
+    case "BACKGROUND":
+      rv = "backgrounds";
+      break;
+    case "TYPES":
+      rv = "types";
+      break;
+    default:
+      rv = null;
+  }
+  return rv;
+}
+
+export function formatLookupToTraitType(lookup: string) {
+  let rv;
+  switch (lookup) {
+    case "backgrounds":
+      rv = "BACKGROUND";
+      break;
+    case "types":
+      rv = "TYPES";
+      break;
+    default:
+      rv = null;
+  }
+  return rv;
+}

@@ -7,6 +7,7 @@ import {
   Camera,
   ArrowLeft,
   RotateCcw,
+  Filter,
 } from "lucide-react";
 
 export const Icons = {
@@ -17,6 +18,7 @@ export const Icons = {
   camera: Camera,
   arrowLeft: ArrowLeft,
   reset: RotateCcw,
+  filter: Filter,
   discord: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

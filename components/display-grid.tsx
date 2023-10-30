@@ -2,22 +2,22 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { SortAttribute, attributes } from "@/lib/attributes";
-import {
-  useWalletInput,
-  WalletAddressData,
-} from "./providers/wallet-input-provider";
+import { SortAttribute } from "@/lib/attributes";
+import { useWalletInput } from "./providers/wallet-input-provider";
 import { OwnedNft } from "alchemy-sdk";
-import { createSortFunction } from "@/lib/sort-factory";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Icons } from "./icons";
+import { SorterDropdown } from "./sorter-dropdown";
+import { FilterDialog } from "./dialogs/filter-dialog";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ReorderDialog } from "./dialogs/reorder-dialog";
+import { useSorter } from "./providers/sort-provider";
 
 type customizeDefaultsType = {
   sortType: SortAttribute;
@@ -29,8 +29,9 @@ type customizeDefaultsType = {
 
 export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
   const { theme, systemTheme } = useTheme();
+  const { resetSortAndFilters } = useSorter();
   const customizeDefaults: customizeDefaultsType = {
-    sortType: "background",
+    sortType: "backgrounds",
     numColumns: 5,
     gridSpacing: 1,
     borderColor: undefined,
@@ -62,17 +63,7 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
     backgroundColor: selectedBGColor,
   };
 
-  const { getAddresses } = useWalletInput();
-  let allAddresses = getAddresses();
-  const owned = combineOwned(allAddresses);
-
-  function combineOwned(allData: WalletAddressData[]) {
-    return allData
-      .map((obj) =>
-        obj.owned.map((value) => ({ ownedAddress: obj.address, ...value }))
-      )
-      .reduce((acc, arr) => acc.concat(arr), []);
-  }
+  const { ownedData } = useWalletInput();
 
   function setDefaultBG(theme: string | undefined) {
     if (theme === "system") theme = systemTheme;
@@ -97,9 +88,6 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
     setSelectedBGColor(customizeDefaults.bgColor);
   };
 
-  const sortFunction = createSortFunction(sortType, attributes);
-  const sortedOwned = [...owned].sort(sortFunction);
-
   useEffect(() => {
     setSelectedBGColor(setDefaultBG(theme));
   }, [theme]);
@@ -111,13 +99,15 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
           <AccordionTrigger>Customize Grid</AccordionTrigger>
           <AccordionContent>
             <div className="w-full flex flex-col gap-3">
-              <Button
-                className="w-[200px] flex items-center gap-2"
-                onClick={resetCustomOptions}
-              >
-                <Icons.reset className="w-4 h-4" />
-                <span>Reset Customization</span>
-              </Button>
+              <div className="w-full flex justify-end">
+                <Button
+                  className="w-[200px] flex items-center gap-2"
+                  onClick={resetCustomOptions}
+                >
+                  <Icons.reset className="w-4 h-4" />
+                  <span>Reset Customization</span>
+                </Button>
+              </div>
               <div className="flex gap-8 items-start">
                 <div className="flex flex-col justify-between">
                   <span className="mb-5 font-bold">
@@ -167,17 +157,38 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
             </div>
           </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="item-2">
+          <AccordionTrigger>Customize Sorter</AccordionTrigger>
+          <AccordionContent>
+            <div className="w-full flex items-start justify-between">
+              <div className="w-full flex flex-col gap-3">
+                <div className="flex gap-4">
+                  <SorterDropdown />
+                  <ReorderDialog />
+                </div>
+                <FilterDialog />
+              </div>
+              <Button
+                className="flex items-center gap-2"
+                onClick={resetSortAndFilters}
+              >
+                <Icons.reset className="h-4 w-4" />
+                Reset Grid
+              </Button>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
       <div className="w-full  px-4 flex justify-end items-center py-2">
         {" "}
         <span className="font-bold">
-          <span>Total Amount: {owned?.length || 0}</span>
+          <span>Total Amount: {ownedData?.length || 0}</span>
         </span>
       </div>
-      {sortedOwned.length > 0 ? (
+      {ownedData.length > 0 ? (
         <div style={gridStyle} id="display-grid" ref={gridRef}>
-          {sortedOwned.map((nft: OwnedNft, i: number) => {
+          {ownedData.map((nft: OwnedNft, i: number) => {
             return (
               <Image
                 key={i}

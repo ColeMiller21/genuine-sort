@@ -1,34 +1,36 @@
-// WalletInputContext.tsx
 import {
   createContext,
   useContext,
   useState,
   ReactNode,
   useEffect,
+  Dispatch,
+  SetStateAction,
 } from "react";
 import { getOwned, getDataFromStorage } from "@/lib/utils";
+import { OwnedNft } from "alchemy-sdk";
 
-// Define the shape of the wallet address data
 export interface WalletAddressData {
   address: string;
-  owned: any[]; // Define the correct type for the 'owned' property
+  owned: any[];
   ownedCount: number;
 }
 
-// Create a context for WalletInputProvider
 interface WalletInputContextType {
   addWalletAddress: (address: string) => Promise<WalletAddressData | null>;
   getAddresses: () => WalletAddressData[];
   resetAddresses: () => void;
   displayGrid: boolean;
   toggleGridDisplay: () => void;
+  defaultOwnedData: OwnedNft[];
+  ownedData: OwnedNft[];
+  setOwnedData: Dispatch<SetStateAction<OwnedNft[]>>;
 }
 
 const WalletInputContext = createContext<WalletInputContextType | undefined>(
   undefined
 );
 
-// Custom hook to access the context
 export function useWalletInput(): WalletInputContextType {
   const context = useContext(WalletInputContext);
   if (!context) {
@@ -37,7 +39,6 @@ export function useWalletInput(): WalletInputContextType {
   return context;
 }
 
-// WalletInputProvider component
 interface WalletInputProviderProps {
   children: ReactNode;
 }
@@ -47,6 +48,8 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     []
   );
   const [displayGrid, setDisplayGrid] = useState<boolean>(false);
+  const [ownedData, setOwnedData] = useState<OwnedNft[]>([]);
+  const [defaultOwnedData, setDefaultOwnedData] = useState<OwnedNft[]>([]);
 
   const toggleGridDisplay = () => {
     setDisplayGrid(!displayGrid);
@@ -76,9 +79,30 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     return walletAddresses;
   };
 
+  const getOwnedData = (data: WalletAddressData[]) => {
+    if (!data) {
+      console.error(`No address data: ${data}`);
+      return;
+    }
+    const owned = combineOwned(data);
+    setDefaultOwnedData(owned);
+    setOwnedData(owned);
+    return owned;
+  };
+
+  function combineOwned(allData: WalletAddressData[]) {
+    return allData
+      .map((obj) =>
+        obj.owned.map((value) => ({ ownedAddress: obj.address, ...value }))
+      )
+      .reduce((acc, arr) => acc.concat(arr), []);
+  }
+
   useEffect(() => {
     if (window) {
-      setWalletAddresses(getDataFromStorage());
+      let data = getDataFromStorage();
+      setWalletAddresses(data);
+      getOwnedData(data);
     }
   }, []);
 
@@ -90,6 +114,9 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         displayGrid,
         toggleGridDisplay,
         resetAddresses,
+        defaultOwnedData,
+        ownedData,
+        setOwnedData,
       }}
     >
       {children}
