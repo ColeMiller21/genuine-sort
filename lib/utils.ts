@@ -6,6 +6,7 @@ import { WalletAddressData } from "@/components/providers/wallet-input-provider"
 
 const MAINNET_KEY = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const GU_ADDRESS = "0x209e639a0EC166Ac7a1A4bA41968fa967dB30221";
+const STORAGE_KEY = "addressData";
 
 const alchemy = new Alchemy({
   apiKey: MAINNET_KEY,
@@ -44,8 +45,6 @@ export const captureScreenshot = async (
   }
 };
 
-const STORAGE_KEY = "addressData";
-
 export const storeDataInStorage = (addressData: WalletAddressData[]) => {
   if (!localStorage.getItem(STORAGE_KEY)) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(addressData));
@@ -64,11 +63,29 @@ export const getDataFromStorage = () => {
 
 export function generateTwitterShareUrl(dataUrl: string) {
   const websiteUrl = "https://genuine-sort.vercel.app/";
-  const encodedDataUrl = encodeURIComponent(dataUrl);
+  const encodedImageUrl = encodeURIComponent(dataUrl);
   const encodedWebsiteUrl = encodeURIComponent(websiteUrl);
-  const tweetText = `Just sorted my Genuine Undead! %0a%0a${encodedDataUrl}%0a%0a#GenuineUndead #RiseAndShine`;
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+  let text = `Just sorted my Genuine Undead!`;
+  let hashTags = "GenuineUndead,RiseAndShine";
+
+  let twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    text
+  )}&url=${encodedImageUrl}&hashtags=${hashTags}`;
+
+  // const twitterShareUrl = `https://twitter.com/intent/tweet?text=${text}&hashtags=${hashTags}`;
+  console.log({ twitterShareUrl });
   return twitterShareUrl;
+}
+
+export function dataURLtoBlob(dataUrl: string) {
+  const base64 = dataUrl.split(",")[1];
+  const binaryString = atob(base64);
+  const arrayBuffer = new ArrayBuffer(binaryString.length);
+  const uint8Array = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < binaryString.length; i++) {
+    uint8Array[i] = binaryString.charCodeAt(i);
+  }
+  return new Blob([uint8Array]);
 }
 
 export function formatTrait(trait: string) {

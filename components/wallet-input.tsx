@@ -3,10 +3,13 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
 import { isValidAddress } from "@/lib/validators";
-import { useWalletInput } from "./providers/wallet-input-provider";
+import {
+  useWalletInput,
+  WalletAddressData,
+} from "./providers/wallet-input-provider";
 
 export function WalletInput() {
-  const { addWalletAddress } = useWalletInput();
+  const { addWalletAddress, getAddresses } = useWalletInput();
   const [address, setAddress] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +21,21 @@ export function WalletInput() {
     }, 2000);
   };
 
+  const checkForDupe = () => {
+    let addresses = getAddresses();
+    let res = addresses.find(
+      (add: WalletAddressData) =>
+        add.address.toLowerCase() === address.toLowerCase()
+    );
+    return res ? true : false;
+  };
+
   const handleAddressSubmit = async () => {
+    if (checkForDupe()) {
+      let msg = `Address has already been added. Input a different address.`;
+      setInputError(msg);
+      return;
+    }
     if (!isValidAddress(address)) {
       let msg = `${address} is not valid address`;
       setInputError(msg);

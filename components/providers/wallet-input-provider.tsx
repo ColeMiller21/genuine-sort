@@ -9,6 +9,7 @@ import {
 } from "react";
 import { getOwned, getDataFromStorage } from "@/lib/utils";
 import { OwnedNft } from "alchemy-sdk";
+import { Wallet } from "ethers";
 
 export interface WalletAddressData {
   address: string;
@@ -25,6 +26,7 @@ interface WalletInputContextType {
   defaultOwnedData: OwnedNft[];
   ownedData: OwnedNft[];
   setOwnedData: Dispatch<SetStateAction<OwnedNft[]>>;
+  getOwned: (data: any) => any;
 }
 
 const WalletInputContext = createContext<WalletInputContextType | undefined>(
@@ -63,7 +65,9 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         owned,
         ownedCount: owned.length,
       };
-      setWalletAddresses([...walletAddresses, newData]);
+      let allAddresses = [...walletAddresses, newData];
+      setWalletAddresses(allAddresses);
+      setAllOwned(allAddresses);
       return newData;
     } catch (error) {
       console.error("Error adding wallet address:", error);
@@ -73,6 +77,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
 
   const resetAddresses = () => {
     setWalletAddresses([]);
+    setOwnedData([]);
   };
 
   const getAddresses = () => {
@@ -84,6 +89,11 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
       console.error(`No address data: ${data}`);
       return;
     }
+    let owned = setAllOwned(data);
+    return owned;
+  };
+
+  const setAllOwned = (data: WalletAddressData[]) => {
     const owned = combineOwned(data);
     setDefaultOwnedData(owned);
     setOwnedData(owned);
@@ -117,6 +127,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         defaultOwnedData,
         ownedData,
         setOwnedData,
+        getOwned,
       }}
     >
       {children}

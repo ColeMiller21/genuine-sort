@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/table";
 
 export function WalletInputTable() {
-  const { getAddresses, toggleGridDisplay, resetAddresses } = useWalletInput();
+  const { getAddresses, toggleGridDisplay, resetAddresses, getOwned } =
+    useWalletInput();
   let allAddresses = getAddresses();
 
   if (!allAddresses || allAddresses.length === 0) {
