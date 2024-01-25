@@ -88,12 +88,19 @@ export function ScreenshotDialog({
           <DialogTitle>Screenshot Result</DialogTitle>
         </DialogHeader>
         {screenshotUrl && (
-          <div className="flex flex-col items-center gap-5">
+          <div className="flex flex-col items-center gap-5 w-full">
             <div className="max-h-[60vh] overflow-y-auto">
               <img src={screenshotUrl} alt="Captured Screenshot" />
             </div>
-            <div className="flex flex-col lg:flex-row gap-4">
-              <Button onClick={handleDownloadClick}>Download Screenshot</Button>
+            <div className="flex flex-col lg:flex-row gap-4 w-full">
+              <Button
+                onClick={handleDownloadClick}
+                className="w-full rounded-full border-primary flex gap-2 items-center"
+                variant={"outline"}
+              >
+                <Icons.download className="h-4 w-4" />
+                Download Screenshot
+              </Button>
               {/* <Button
                 onClick={handleTwitterShare}
                 className="flex items-center gap-1"

@@ -47,14 +47,20 @@ export function WalletInput() {
 
   return (
     <div className="w-full flex flex-col items-center gap-3">
-      <div className="flex w-full max-w-sm items-center space-x-2">
-        <Input
+      <div className="flex w-full max-w-sm items-center space-x-2 space-y-6 flex-col">
+        <input
           type="text"
-          placeholder="Address"
+          placeholder="Enter Wallet Address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
+          className="border-b border-primary bg-transparent w-full text-center py-2 focus:outline-none text-sm"
         />
-        <Button onClick={handleAddressSubmit} disabled={!address}>
+        <Button
+          onClick={handleAddressSubmit}
+          disabled={!address}
+          className="rounded-full border-primary w-full"
+          variant={"outline"}
+        >
           Add Address
         </Button>
       </div>

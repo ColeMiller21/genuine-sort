@@ -42,7 +42,12 @@ export function ReorderDialog() {
   return (
     <Dialog open={open} onOpenChange={toggleDialog}>
       <DialogTrigger asChild>
-        <Button onClick={toggleDialog}>Customize Order</Button>
+        <Button
+          onClick={toggleDialog}
+          className="w-full bg-muted-foreground rounded-full"
+        >
+          Customize Order
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

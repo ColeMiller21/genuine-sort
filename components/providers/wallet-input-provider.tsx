@@ -97,6 +97,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     const owned = combineOwned(data);
     setDefaultOwnedData(owned);
     setOwnedData(owned);
+    console.log({ owned });
     return owned;
   };
 

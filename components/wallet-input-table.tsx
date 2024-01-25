@@ -32,11 +32,19 @@ export function WalletInputTable() {
   }
   return (
     <div className="w-full flex flex-col items-center gap-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={handleGoToDisplay}>Go to Display</Button>
-        <Button onClick={handleReset} className="flex items-center gap-1">
+      <div className="flex items-center gap-4 w-full max-w-sm -mt-4">
+        <Button
+          onClick={handleReset}
+          className="flex items-center gap-1 w-full rounded-full bg-muted-foreground"
+        >
           <Icons.reset className="w-4 h-4" />
           <span>Reset</span>
+        </Button>
+        <Button
+          onClick={handleGoToDisplay}
+          className="w-full rounded-full bg-muted-foreground"
+        >
+          Go to Display
         </Button>
       </div>
       <Table className="w-full lg:w-[80%] mx-auto">

@@ -73,7 +73,7 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
 
   function setDefaultBG(theme: string | undefined) {
     if (theme === "system") theme = systemTheme;
-    return theme === "dark" ? "#090909" : "#ffffff";
+    return theme === "dark" ? "#191917" : "#f8f8f4";
   }
 
   const handleColumnChange = (val: number[]) => {
@@ -111,98 +111,108 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
 
   return (
     <div className="w-full lg:w-[80%] flex flex-col gap-2">
-      <Accordion type="single" collapsible>
-        <AccordionItem value="item-1">
+      <Accordion type="multiple">
+        <AccordionItem value="item-1" className="border-primary">
           <AccordionTrigger>Customize Grid</AccordionTrigger>
           <AccordionContent>
             <div className="w-full flex flex-col gap-3">
-              <div className="w-full flex justify-end">
+              <div className="flex flex-col md:flex-row gap-8 items-start w-full">
+                <div className="flex justify-between w-full gap-8">
+                  <div className="flex flex-col justify-between flex-grow">
+                    <span className="mb-5 font-bold">
+                      Column Count - {numColumns}
+                    </span>
+                    <div>
+                      <Slider
+                        defaultValue={[numColumns]}
+                        min={1}
+                        max={10}
+                        step={1}
+                        onValueChange={handleColumnChange}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col justify-between flex-grow">
+                    <span className="mb-5 font-bold">
+                      Grid Space - {gridSpacing}rem
+                    </span>
+                    <div>
+                      <Slider
+                        defaultValue={[gridSpacing]}
+                        min={0.5}
+                        max={4}
+                        step={0.5}
+                        onValueChange={handleSpacingChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-between w-full gap-8">
+                  {" "}
+                  <div className="flex flex-col items-center flex-grow">
+                    <span className="mb-3 font-bold">Background Color</span>
+                    <input
+                      type="color"
+                      value={selectedBGColor}
+                      onChange={(e) => setSelectedBGColor(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-col items-center flex-grow">
+                    <span className="mb-3 font-bold">Border Color</span>
+                    <input
+                      type="color"
+                      value={selectedBorderColor}
+                      onChange={(e) => setSelectedBorderColor(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-full flex">
                 <Button
-                  className="w-[200px] flex items-center gap-2"
+                  className="flex items-center gap-2 w-full rounded-full bg-muted-foreground"
                   onClick={resetCustomOptions}
                 >
                   <Icons.reset className="w-4 h-4" />
                   <span>Reset Customization</span>
                 </Button>
               </div>
-              <div className="flex gap-8 items-start">
-                <div className="flex flex-col justify-between">
-                  <span className="mb-5 font-bold">
-                    Column Count - {numColumns}
-                  </span>
-                  <div>
-                    <Slider
-                      defaultValue={[numColumns]}
-                      min={1}
-                      max={10}
-                      step={1}
-                      onValueChange={handleColumnChange}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col justify-between">
-                  <span className="mb-5 font-bold">
-                    Grid Space - {gridSpacing}rem
-                  </span>
-                  <div>
-                    <Slider
-                      defaultValue={[gridSpacing]}
-                      min={0.5}
-                      max={4}
-                      step={0.5}
-                      onValueChange={handleSpacingChange}
-                    />
-                  </div>
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="mb-3 font-bold">Background Color</span>
-                  <input
-                    type="color"
-                    value={selectedBGColor}
-                    onChange={(e) => setSelectedBGColor(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="mb-3 font-bold">Border Color</span>
-                  <input
-                    type="color"
-                    value={selectedBorderColor}
-                    onChange={(e) => setSelectedBorderColor(e.target.value)}
-                  />
-                </div>
-              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="item-2">
+        <AccordionItem value="item-2" className="border-primary">
           <AccordionTrigger>Customize Sorter</AccordionTrigger>
           <AccordionContent>
             <div className="w-full flex items-start justify-between">
               <div className="w-full flex flex-col gap-3">
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center justify-between">
                   <SorterDropdown />
-                  <ReorderDialog />
+                  <FilterDialog
+                    filteredAttributes={filteredAttributes}
+                    resetFilters={resetFilters}
+                    setFilteredAttributes={setFilteredAttributes}
+                  />
                 </div>
-                <FilterDialog
-                  filteredAttributes={filteredAttributes}
-                  resetFilters={resetFilters}
-                  setFilteredAttributes={setFilteredAttributes}
-                />
+                <div className="flex gap-2 w-full">
+                  {" "}
+                  <ReorderDialog />
+                  <Button
+                    className="flex items-center gap-2 w-full rounded-full bg-muted-foreground"
+                    onClick={handleReset}
+                  >
+                    <Icons.reset className="h-4 w-4" />
+                    Reset Grid
+                  </Button>
+                </div>
               </div>
-              <Button className="flex items-center gap-2" onClick={handleReset}>
-                <Icons.reset className="h-4 w-4" />
-                Reset Grid
-              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
 
-      <div className="w-full  px-4 flex justify-end items-center py-2">
-        {" "}
-        <span className="font-bold">
-          <span>Total Amount: {ownedData?.length || 0}</span>
-        </span>
+      <div className="w-full flex justify-between items-center py-2 font-bold">
+        <span>Total Amount:</span>
+        <span> {ownedData?.length || 0}</span>
       </div>
       {ownedData.length > 0 ? (
         <div style={gridStyle} id="display-grid" ref={gridRef}>

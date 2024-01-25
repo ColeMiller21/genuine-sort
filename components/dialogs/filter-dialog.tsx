@@ -70,7 +70,8 @@ export function FilterDialog({
       <DialogTrigger asChild>
         <Button
           onClick={toggleDialog}
-          className="flex items-center gap-2 w-[200px]"
+          className="flex items-center gap-2 w-[200px] rounded-full border-primary"
+          variant={"outline"}
         >
           <Icons.filter className="h-4 w-4" />
           <span>Add Filters</span>

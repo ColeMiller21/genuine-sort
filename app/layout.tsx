@@ -33,7 +33,16 @@ export default function RootLayout({
       >
         <Providers>
           <div className="w-screen flex flex-col max-w-[1400px] items-center">
-            <nav className="w-full flex items-center justify-between py-3">
+            <nav className="w-full flex items-center justify-between py-3 px-4">
+              <Link href="https://www.genuineundead.io/">
+                <div className={`z-101 flex items-center w-[35px] h-[35px] `}>
+                  <img
+                    src="/GUIcon.svg"
+                    alt="Genuine Undead Icon"
+                    className="cursor-pointer"
+                  />
+                </div>
+              </Link>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold">Created by b0nes</span>
                 <a

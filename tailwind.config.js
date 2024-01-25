@@ -21,6 +21,8 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
+        teko: ["teko", "sans-serif"],
+        didot: ["linotype-didot", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",

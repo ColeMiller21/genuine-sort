@@ -9,7 +9,7 @@ type BoxProps = {
 
 export function SpinBox() {
   return (
-    <div className="grid place-content-center px-4 py-12">
+    <div className="flex flex-col px-4 py-12">
       <SpinningBoxText />
     </div>
   );
@@ -17,9 +17,14 @@ export function SpinBox() {
 
 const SpinningBoxText = () => {
   return (
-    <span className="flex flex-col items-center justify-center gap-6 text-4xl font-semibold md:flex-row md:gap-4">
-      <span className="font-extrabold uppercase">Genuinely</span>{" "}
-      <Box front="Sort" bottom="Customize" back="Share" top="Repeat" />
+    <span className="flex flex-col items-center justify-center gap-6 text-4xl font-semibold md:gap-4">
+      <h2 className={`text-[3rem] lg:text-[4.5rem] leading-none font-didot`}>
+        <i>GENUINE</i>
+      </h2>
+      <h2 className="font-teko text-[7rem] lg:text-[10rem] font-extrabold my-4 lg:my-8">
+        GALLERY
+      </h2>
+      <Box front="COLLECT" bottom="CURATE" back="SHARE" top="REPEAT" />
     </span>
   );
 };
@@ -27,7 +32,7 @@ const SpinningBoxText = () => {
 const Box = ({ front, bottom, back, top }: BoxProps) => {
   return (
     <motion.span
-      className="relative h-20 w-72 font-black uppercase"
+      className="relative h-[3rem] w-60 font-black uppercase text-medium"
       style={{
         transformStyle: "preserve-3d",
         transformOrigin: "center center -40px",
@@ -53,22 +58,22 @@ const Box = ({ front, bottom, back, top }: BoxProps) => {
       }}
     >
       {/* FRONT */}
-      <span className="absolute flex h-full w-full items-center justify-center border-2 border-input bg-background">
+      <span className="absolute flex h-full w-full items-center justify-center border-2 border-primary bg-background">
         {front}
       </span>
 
       {/* BOTTOM */}
       <span
-        style={{ transform: "translateY(5rem) rotateX(-90deg)" }}
-        className="absolute flex h-full w-full origin-top items-center justify-center border-2 border-input bg-background"
+        style={{ transform: "translateY(3rem) rotateX(-90deg)" }}
+        className="absolute flex h-full w-full origin-top items-center justify-center border-2 border-primary bg-background"
       >
         {bottom}
       </span>
 
       {/* TOP */}
       <span
-        style={{ transform: "translateY(-5rem) rotateX(90deg)" }}
-        className="absolute flex h-full w-full origin-bottom items-center justify-center border-2 border-input bg-background"
+        style={{ transform: "translateY(-3rem) rotateX(90deg)" }}
+        className="absolute flex h-full w-full origin-bottom items-center justify-center border-2 border-primary bg-background"
       >
         {top}
       </span>
@@ -76,9 +81,9 @@ const Box = ({ front, bottom, back, top }: BoxProps) => {
       {/* BACK */}
       <span
         style={{
-          transform: "translateZ(-5rem) rotateZ(-180deg) rotateY(180deg)",
+          transform: "translateZ(-3rem) rotateZ(-180deg) rotateY(180deg)",
         }}
-        className="absolute flex h-full w-full origin-center items-center justify-center border-2 border-input bg-background"
+        className="absolute flex h-full w-full origin-center items-center justify-center border-2 border-primary bg-background"
       >
         {back}
       </span>
