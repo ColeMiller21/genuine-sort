@@ -222,9 +222,6 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
                 key={i}
                 src={nft.media[0]?.gateway}
                 alt={nft.title}
-                width={100}
-                height={100}
-                quality={100}
                 borderColor={selectedBorderColor}
               />
             );
@@ -240,41 +237,33 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
 interface RetryableImageProps {
   src: string;
   alt: string;
-  width: number;
-  height: number;
-  quality: number;
   borderColor: string | undefined;
 }
 
-const RetryableImage = ({
-  src,
-  alt,
-  width,
-  height,
-  quality,
-  borderColor,
-}: RetryableImageProps) => {
+const RetryableImage = ({ src, alt, borderColor }: RetryableImageProps) => {
   const [retryKey, setRetryKey] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
-  const maxRetries = 3; // Set the maximum number of retries
+  const maxRetries = 3;
 
   const handleImageError = () => {
     if (errorCount < maxRetries) {
       setErrorCount((prev) => prev + 1);
-      setRetryKey((prev) => prev + 1); // Change the key to trigger a re-fetch
+      setRetryKey((prev) => prev + 1);
     }
   };
 
   return (
-    <Image
-      key={retryKey} // Key to trigger re-render
-      src={`${src}?retry=${retryKey}`} // Append a retry query parameter
-      alt={alt}
-      width={width}
-      height={height}
-      quality={quality}
-      style={{ borderWidth: "2px", borderColor }}
-      onError={handleImageError}
-    />
+    <div className="relative w-full h-0 pb-[100%]">
+      <Image
+        key={retryKey}
+        src={`${src}?retry=${retryKey}`}
+        alt={alt}
+        layout="fill"
+        quality={100}
+        style={{ borderWidth: "2px", borderColor }}
+        objectFit="cover"
+        onError={handleImageError}
+      />
+    </div>
   );
 };
