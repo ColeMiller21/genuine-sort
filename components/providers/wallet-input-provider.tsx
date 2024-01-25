@@ -60,6 +60,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const addWalletAddress = async (address: string) => {
     try {
       const owned = await getOwned(address);
+      // console.log(owned);
       const newData: WalletAddressData = {
         address,
         owned,

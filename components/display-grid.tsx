@@ -218,15 +218,14 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
         <div style={gridStyle} id="display-grid" ref={gridRef}>
           {ownedData.map((nft: OwnedNft, i: number) => {
             return (
-              <Image
+              <RetryableImage
                 key={i}
-                className="w-full aspect-square"
                 src={nft.media[0]?.gateway}
                 alt={nft.title}
                 width={100}
                 height={100}
                 quality={100}
-                style={{ borderWidth: "2px", borderColor: selectedBorderColor }}
+                borderColor={selectedBorderColor}
               />
             );
           })}
@@ -237,3 +236,45 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
     </div>
   );
 }
+
+interface RetryableImageProps {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  quality: number;
+  borderColor: string | undefined;
+}
+
+const RetryableImage = ({
+  src,
+  alt,
+  width,
+  height,
+  quality,
+  borderColor,
+}: RetryableImageProps) => {
+  const [retryKey, setRetryKey] = useState(0);
+  const [errorCount, setErrorCount] = useState(0);
+  const maxRetries = 3; // Set the maximum number of retries
+
+  const handleImageError = () => {
+    if (errorCount < maxRetries) {
+      setErrorCount((prev) => prev + 1);
+      setRetryKey((prev) => prev + 1); // Change the key to trigger a re-fetch
+    }
+  };
+
+  return (
+    <Image
+      key={retryKey} // Key to trigger re-render
+      src={`${src}?retry=${retryKey}`} // Append a retry query parameter
+      alt={alt}
+      width={width}
+      height={height}
+      quality={quality}
+      style={{ borderWidth: "2px", borderColor }}
+      onError={handleImageError}
+    />
+  );
+};
