@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Alchemy, Network } from "alchemy-sdk";
+import { Alchemy, Network, OwnedNft } from "alchemy-sdk";
 import { toPng } from "html-to-image";
 import { WalletAddressData } from "@/components/providers/wallet-input-provider";
 
@@ -17,14 +17,31 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export async function getOwned(address: string) {
-  let res = await alchemy.nft.getNftsForOwner(address, {
-    contractAddresses: [GU_ADDRESS],
-  });
-  if (res.ownedNfts) {
-    return res.ownedNfts;
+export async function getOwned(address: string): Promise<any[]> {
+  async function fetchAllNfts(
+    address: string,
+    pageKey: string | null = null,
+    allNfts: any[] = []
+  ): Promise<any[]> {
+    const options: any = { contractAddresses: [GU_ADDRESS] };
+    if (pageKey) {
+      options.pageKey = pageKey;
+    }
+
+    const res = await alchemy.nft.getNftsForOwner(address, options);
+
+    if (res.ownedNfts) {
+      allNfts.push(...res.ownedNfts);
+    }
+
+    if (res.pageKey) {
+      return await fetchAllNfts(address, res.pageKey, allNfts);
+    } else {
+      return allNfts;
+    }
   }
-  return [];
+
+  return await fetchAllNfts(address);
 }
 
 export const captureScreenshot = async (
@@ -46,9 +63,7 @@ export const captureScreenshot = async (
 };
 
 export const storeDataInStorage = (addressData: WalletAddressData[]) => {
-  if (!localStorage.getItem(STORAGE_KEY)) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(addressData));
-  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(addressData));
 };
 
 export const clearStorage = () => {
@@ -73,7 +88,6 @@ export function generateTwitterShareUrl(dataUrl: string) {
   )}&url=${encodedImageUrl}&hashtags=${hashTags}`;
 
   // const twitterShareUrl = `https://twitter.com/intent/tweet?text=${text}&hashtags=${hashTags}`;
-  console.log({ twitterShareUrl });
   return twitterShareUrl;
 }
 

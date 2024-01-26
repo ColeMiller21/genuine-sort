@@ -7,9 +7,8 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { getOwned, getDataFromStorage } from "@/lib/utils";
+import { getOwned, getDataFromStorage, storeDataInStorage } from "@/lib/utils";
 import { OwnedNft } from "alchemy-sdk";
-import { Wallet } from "ethers";
 
 export interface WalletAddressData {
   address: string;
@@ -60,13 +59,13 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const addWalletAddress = async (address: string) => {
     try {
       const owned = await getOwned(address);
-      // console.log(owned);
       const newData: WalletAddressData = {
         address,
         owned,
         ownedCount: owned.length,
       };
       let allAddresses = [...walletAddresses, newData];
+      storeDataInStorage(allAddresses);
       setWalletAddresses(allAddresses);
       setAllOwned(allAddresses);
       return newData;
@@ -96,9 +95,9 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
 
   const setAllOwned = (data: WalletAddressData[]) => {
     const owned = combineOwned(data);
+
     setDefaultOwnedData(owned);
     setOwnedData(owned);
-    console.log({ owned });
     return owned;
   };
 

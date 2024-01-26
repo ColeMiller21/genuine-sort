@@ -220,8 +220,8 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
             return (
               <RetryableImage
                 key={i}
-                src={nft.media[0]?.gateway}
-                alt={nft.title}
+                src={nft.image.cachedUrl || (nft.image.pngUrl as string)}
+                alt={nft?.name || "test"}
                 borderColor={selectedBorderColor}
               />
             );
@@ -258,11 +258,12 @@ const RetryableImage = ({ src, alt, borderColor }: RetryableImageProps) => {
         key={retryKey}
         src={`${src}?retry=${retryKey}`}
         alt={alt}
-        layout="fill"
+        fill
         quality={100}
-        style={{ borderWidth: "2px", borderColor }}
-        objectFit="cover"
+        style={{ borderWidth: "2px", borderColor, objectFit: "cover" }}
         onError={handleImageError}
+        priority
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       />
     </div>
   );
