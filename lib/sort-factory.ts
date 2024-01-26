@@ -8,18 +8,18 @@ export const createSortFunction =
     let lookupAttribute = formatLookupToTraitType(attribute) as string;
     // console.log({ a, b, attribute, lookupAttribute });
     const aValue =
-      (a.rawMetadata &&
-        a.rawMetadata.attributes &&
-        a.rawMetadata.attributes.find(
-          (attr) => attr.trait_type === lookupAttribute
+      (a.raw.metadata &&
+        a.raw.metadata.attributes &&
+        a.raw.metadata.attributes.find(
+          (attr: any) => attr.trait_type === lookupAttribute
         )?.value) ||
       "";
 
     const bValue =
-      (b.rawMetadata &&
-        b.rawMetadata.attributes &&
-        b.rawMetadata.attributes.find(
-          (attr) => attr.trait_type === lookupAttribute
+      (b.raw.metadata &&
+        b.raw.metadata.attributes &&
+        b.raw.metadata.attributes.find(
+          (attr: any) => attr.trait_type === lookupAttribute
         )?.value) ||
       "";
 

@@ -55,7 +55,7 @@ export function SorterProvider({ children }: { children: React.ReactNode }) {
 
   function filterOwnedItems(sortedOwned: any, attributes: any): any[] {
     return sortedOwned.filter((item: any) => {
-      const shouldInclude = item.rawMetadata.attributes.every((attr: any) => {
+      const shouldInclude = item.raw.metadata.attributes.every((attr: any) => {
         let lookupTrait = formatTraitType(attr.trait_type) as string;
         if (!lookupTrait) return true;
         let attributesToCheck = attributes[lookupTrait];
