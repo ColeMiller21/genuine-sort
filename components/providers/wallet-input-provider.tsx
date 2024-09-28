@@ -10,14 +10,18 @@ import {
 import { getOwned, getDataFromStorage, storeDataInStorage } from "@/lib/utils";
 import { OwnedNft } from "alchemy-sdk";
 
-export interface WalletAddressData {
+export type WalletAddressData = {
   address: string;
+  originalInput: string;
   owned: any[];
   ownedCount: number;
-}
+};
 
 interface WalletInputContextType {
-  addWalletAddress: (address: string) => Promise<WalletAddressData | null>;
+  addWalletAddress: (
+    address: string,
+    originalInput: string
+  ) => Promise<WalletAddressData | null>;
   getAddresses: () => WalletAddressData[];
   resetAddresses: () => void;
   displayGrid: boolean;
@@ -56,11 +60,12 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     setDisplayGrid(!displayGrid);
   };
 
-  const addWalletAddress = async (address: string) => {
+  const addWalletAddress = async (address: string, originalInput: string) => {
     try {
       const owned = await getOwned(address);
       const newData: WalletAddressData = {
         address,
+        originalInput,
         owned,
         ownedCount: owned.length,
       };

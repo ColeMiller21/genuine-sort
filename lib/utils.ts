@@ -1,11 +1,12 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Alchemy, Network, OwnedNft } from "alchemy-sdk";
+import { Alchemy, Network, OwnedNft, Utils } from "alchemy-sdk";
 import { toPng } from "html-to-image";
 import { WalletAddressData } from "@/components/providers/wallet-input-provider";
 
 const MAINNET_KEY = process.env.NEXT_PUBLIC_ALCHEMY_ID;
 const GU_ADDRESS = "0x209e639a0EC166Ac7a1A4bA41968fa967dB30221";
+const GU_V2_ADDRESS = "0x39509d8E1dD96CC8BAD301EA65c75c7deB52374c";
 const STORAGE_KEY = "addressData";
 
 const alchemy = new Alchemy({
@@ -20,10 +21,11 @@ export function cn(...inputs: ClassValue[]) {
 export async function getOwned(address: string): Promise<any[]> {
   async function fetchAllNfts(
     address: string,
+    contractAddresses: string[],
     pageKey: string | null = null,
     allNfts: any[] = []
   ): Promise<any[]> {
-    const options: any = { contractAddresses: [GU_ADDRESS] };
+    const options: any = { contractAddresses };
     if (pageKey) {
       options.pageKey = pageKey;
     }
@@ -35,13 +37,43 @@ export async function getOwned(address: string): Promise<any[]> {
     }
 
     if (res.pageKey) {
-      return await fetchAllNfts(address, res.pageKey, allNfts);
+      return await fetchAllNfts(
+        address,
+        contractAddresses,
+        res.pageKey,
+        allNfts
+      );
     } else {
       return allNfts;
     }
   }
 
-  return await fetchAllNfts(address);
+  let resolvedAddress = address;
+
+  // Function to validate Ethereum address
+  function isValidEthereumAddress(address: string): boolean {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  // Check if the address is an ENS name
+  if (address.endsWith(".eth")) {
+    try {
+      const resolved = await alchemy.core.resolveName(address);
+      if (resolved) {
+        resolvedAddress = resolved;
+      } else {
+        throw new Error("Unable to resolve ENS name");
+      }
+    } catch (error) {
+      console.error("Error resolving ENS name:", error);
+      throw error;
+    }
+  } else if (!isValidEthereumAddress(address)) {
+    throw new Error("Invalid Ethereum address");
+  }
+
+  const contractAddresses = [GU_ADDRESS, GU_V2_ADDRESS];
+  return await fetchAllNfts(resolvedAddress, contractAddresses);
 }
 
 export const captureScreenshot = async (

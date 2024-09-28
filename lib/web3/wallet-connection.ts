@@ -4,6 +4,7 @@ import { configureChains, createConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
+import { Alchemy, Network } from "alchemy-sdk";
 
 const ALCHEMY_ID = process.env.NEXT_PUBLIC_ALCHEMY_ID as string;
 const PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
@@ -24,3 +25,34 @@ export const wagmiConfig = createConfig({
   connectors,
   publicClient,
 });
+
+const alchemy = new Alchemy({
+  apiKey: ALCHEMY_ID,
+  network: Network.ETH_MAINNET,
+});
+
+export async function resolveENS(address: string): Promise<string> {
+  // Function to validate Ethereum address
+  function isValidEthereumAddress(address: string): boolean {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  // Check if the address is an ENS name
+  if (address.endsWith(".eth")) {
+    try {
+      const resolved = await alchemy.core.resolveName(address);
+      if (resolved) {
+        return resolved;
+      } else {
+        throw new Error("Unable to resolve ENS name");
+      }
+    } catch (error) {
+      console.error("Error resolving ENS name:", error);
+      throw error;
+    }
+  } else if (!isValidEthereumAddress(address)) {
+    throw new Error("Invalid Ethereum address");
+  }
+
+  return address;
+}

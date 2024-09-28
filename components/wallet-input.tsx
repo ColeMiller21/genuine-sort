@@ -1,13 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "./ui/button";
-import { isValidAddress } from "@/lib/validators";
+import { isValidAddress, isValidENS } from "@/lib/validators";
 import {
   useWalletInput,
   WalletAddressData,
 } from "./providers/wallet-input-provider";
 import { Icons } from "./icons";
+import { resolveENS } from "@/lib/web3/wallet-connection";
 
 export function WalletInput() {
   const { addWalletAddress, getAddresses } = useWalletInput();
@@ -34,20 +34,26 @@ export function WalletInput() {
 
   const handleAddressSubmit = async () => {
     setLoading(true);
+    let resolvedAddress = address;
+
     if (checkForDupe()) {
-      let msg = `Address has already been added. Input a different address.`;
+      let msg = `Address or ENS name has already been added. Input a different one.`;
       setInputError(msg);
       setLoading(false);
       return;
     }
-    if (!isValidAddress(address)) {
-      let msg = `${address} is not valid address`;
-      setInputError(msg);
-      setLoading(false);
-      return;
-    }
+
     try {
-      await addWalletAddress(address);
+      resolvedAddress = await resolveENS(address);
+    } catch (err) {
+      console.error(err);
+      setInputError(`Error resolving address or ENS name: ${address}`);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await addWalletAddress(resolvedAddress, address);
       setAddress("");
       setLoading(false);
     } catch (err) {
@@ -61,7 +67,7 @@ export function WalletInput() {
       <div className="flex w-full max-w-sm items-center space-x-2 space-y-6 flex-col">
         <input
           type="text"
-          placeholder="Enter Wallet Address"
+          placeholder="Enter Wallet Address or ENS Name"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           className="border-b border-primary bg-transparent w-full text-center py-2 focus:outline-none text-sm"

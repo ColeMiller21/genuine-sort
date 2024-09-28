@@ -10,3 +10,7 @@ export function isValidAddress(address: string) {
     return false;
   }
 }
+
+export function isValidENS(name: string): boolean {
+  return name.toLowerCase().endsWith(".eth");
+}
