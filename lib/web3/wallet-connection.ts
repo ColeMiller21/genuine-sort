@@ -60,7 +60,7 @@ export async function resolveENS(address: string): Promise<string> {
 
 // Update this function to send a tip
 export async function sendTip(amount: string): Promise<`0x${string}`> {
-  const hardcodedAddress = "0xEd42a25A7fDE348473e57DB6DB4B86893b7B845B";
+  const hardcodedAddress = "0x5Cde4143037FC3Ee8a1F86944389711652d69b04";
 
   const config = {
     to: hardcodedAddress,
