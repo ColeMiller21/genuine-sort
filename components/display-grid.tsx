@@ -21,6 +21,8 @@ import { useSorter } from "./providers/sort-provider";
 import { cloneDeep } from "lodash";
 import { AttributeType } from "@/lib/attributes";
 import { toggleAllTraits } from "@/lib/attributes";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type customizeDefaultsType = {
   sortType: SortAttribute;
@@ -58,6 +60,9 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
   const clonedAttributes = cloneDeep(attributes);
   const [filteredAttributes, setFilteredAttributes] =
     useState<AttributeType>(clonedAttributes);
+  const [showUndeadz, setShowUndeadz] = useState<boolean>(true);
+  const [showOriginal, setShowOriginal] = useState<boolean>(true);
+  const [nftFilter, setNftFilter] = useState<string>("both");
 
   const gridStyle = {
     display: "grid",
@@ -104,6 +109,18 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
     resetFilters = toggleAllTraits(resetFilters, true);
     setFilteredAttributes(resetFilters);
   };
+
+  const filteredOwnedData = ownedData.filter((nft: OwnedNft) => {
+    switch (nftFilter) {
+      case "undeadz":
+        return nft.collection?.name === "UNDEADZ";
+      case "gu":
+        return nft.collection?.name !== "UNDEADZ";
+      case "both":
+      default:
+        return true;
+    }
+  });
 
   useEffect(() => {
     setSelectedBGColor(setDefaultBG(theme));
@@ -194,8 +211,7 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
                   />
                 </div>
                 <div className="flex gap-2 w-full">
-                  {" "}
-                  <ReorderDialog />
+                  <ReorderDialog filteredOwnedData={filteredOwnedData} />
                   <Button
                     className="flex items-center gap-2 w-full rounded-full bg-muted-foreground"
                     onClick={handleReset}
@@ -208,15 +224,34 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
             </div>
           </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="item-3" className="border-primary">
+          <AccordionTrigger>Filter NFTs</AccordionTrigger>
+          <AccordionContent>
+            <RadioGroup value={nftFilter} onValueChange={setNftFilter}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="both" id="both" />
+                <Label htmlFor="both">Show Both</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="undeadz" id="undeadz" />
+                <Label htmlFor="undeadz">Undeadz Only</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="gu" id="gu" />
+                <Label htmlFor="gu">Genuine Undead Only</Label>
+              </div>
+            </RadioGroup>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
 
       <div className="w-full flex justify-between items-center py-2 font-bold">
         <span>Total Amount:</span>
-        <span> {ownedData?.length || 0}</span>
+        <span> {filteredOwnedData.length || 0}</span>
       </div>
-      {ownedData.length > 0 ? (
+      {filteredOwnedData.length > 0 ? (
         <div style={gridStyle} id="display-grid" ref={gridRef}>
-          {ownedData.map((nft: OwnedNft, i: number) => {
+          {filteredOwnedData.map((nft: OwnedNft, i: number) => {
             return (
               <RetryableImage
                 key={i}
@@ -228,7 +263,7 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
           })}
         </div>
       ) : (
-        <div>You have no GUs</div>
+        <div>No NFTs to display</div>
       )}
     </div>
   );
