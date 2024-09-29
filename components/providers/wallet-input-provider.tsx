@@ -36,6 +36,8 @@ interface WalletInputContextType {
   setOwnedData: Dispatch<SetStateAction<OwnedNft[]>>;
   getOwned: (data: any) => any;
   handleAddUndeadz: () => void;
+  hasUndeadz: boolean;
+  setHasUndeadz: Dispatch<SetStateAction<boolean>>;
 }
 
 const WalletInputContext = createContext<WalletInputContextType | undefined>(
@@ -61,6 +63,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
   const [displayGrid, setDisplayGrid] = useState<boolean>(false);
   const [ownedData, setOwnedData] = useState<OwnedNft[]>([]);
   const [defaultOwnedData, setDefaultOwnedData] = useState<OwnedNft[]>([]);
+  const [hasUndeadz, setHasUndeadz] = useState<boolean>(false);
 
   const toggleGridDisplay = () => {
     setDisplayGrid(!displayGrid);
@@ -160,10 +163,11 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
             newData.push(undeadz);
           }
         });
-
+        console.log({ newData });
         return newData;
       });
 
+      setHasUndeadz(true);
       console.log("Undeadz added successfully");
     } catch (error) {
       console.error("Error adding Undeadz:", error);
@@ -182,7 +186,9 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         ownedData,
         setOwnedData,
         getOwned,
-        handleAddUndeadz, // Add the new function to the context value
+        handleAddUndeadz,
+        hasUndeadz,
+        setHasUndeadz,
       }}
     >
       {children}

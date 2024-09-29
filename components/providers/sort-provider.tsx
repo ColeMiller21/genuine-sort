@@ -70,9 +70,10 @@ export function SorterProvider({ children }: { children: React.ReactNode }) {
   }
 
   const sortData = (attr?: AttributeType) => {
-    let filtered = filterOwnedItems(defaultOwnedData, attr || attributes);
+    let filtered = filterOwnedItems(ownedData, attr || attributes);
     const sortFunction = createSortFunction(primarySort, attr || attributes);
     const sortedOwned = [...filtered].sort(sortFunction);
+
     setOwnedData(sortedOwned);
   };
 

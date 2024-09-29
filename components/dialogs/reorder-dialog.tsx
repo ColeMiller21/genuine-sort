@@ -12,8 +12,13 @@ import { Button } from "../ui/button";
 import { useSorter } from "../providers/sort-provider";
 import { Reorder, motion } from "framer-motion";
 import { Attribute } from "@/lib/attributes";
+import { OwnedNft } from "alchemy-sdk";
 
-export function ReorderDialog() {
+interface ReorderDialogProps {
+  filteredOwnedData: OwnedNft[];
+}
+
+export function ReorderDialog({ filteredOwnedData }: ReorderDialogProps) {
   const { primarySort, attributes, setAttributes } = useSorter();
   const attributesToSort = attributes[primarySort].filter(
     (item: Attribute) => item.include

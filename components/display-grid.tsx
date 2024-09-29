@@ -211,8 +211,7 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
                   />
                 </div>
                 <div className="flex gap-2 w-full">
-                  {" "}
-                  <ReorderDialog />
+                  <ReorderDialog filteredOwnedData={filteredOwnedData} />
                   <Button
                     className="flex items-center gap-2 w-full rounded-full bg-muted-foreground"
                     onClick={handleReset}
