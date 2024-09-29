@@ -7,7 +7,12 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-import { getOwned, getDataFromStorage, storeDataInStorage } from "@/lib/utils";
+import {
+  getOwned,
+  getUndeadz,
+  getDataFromStorage,
+  storeDataInStorage,
+} from "@/lib/utils";
 import { OwnedNft } from "alchemy-sdk";
 
 export type WalletAddressData = {
@@ -30,6 +35,7 @@ interface WalletInputContextType {
   ownedData: OwnedNft[];
   setOwnedData: Dispatch<SetStateAction<OwnedNft[]>>;
   getOwned: (data: any) => any;
+  handleAddUndeadz: () => void;
 }
 
 const WalletInputContext = createContext<WalletInputContextType | undefined>(
@@ -122,6 +128,48 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     }
   }, []);
 
+  const handleAddUndeadz = async () => {
+    try {
+      const addresses = getAddresses();
+      let allUndeadz: OwnedNft[] = [];
+
+      for (const addressData of addresses) {
+        const undeadzForAddress = await getUndeadz(addressData.address);
+        allUndeadz = allUndeadz.concat(
+          undeadzForAddress.map((nft) => ({
+            ...nft,
+            ownedAddress: addressData.address,
+          }))
+        );
+      }
+
+      setOwnedData((prevData) => {
+        const newData = [...prevData];
+        allUndeadz.forEach((undeadz) => {
+          const matchingIndex = newData.findIndex(
+            (nft: any) =>
+              nft.tokenId === undeadz.tokenId &&
+              nft?.collection.name !== "UNDEADZ"
+          );
+
+          if (matchingIndex !== -1) {
+            // Insert the Undeadz next to the original
+            newData.splice(matchingIndex + 1, 0, undeadz);
+          } else {
+            // If no match found, add to the end
+            newData.push(undeadz);
+          }
+        });
+
+        return newData;
+      });
+
+      console.log("Undeadz added successfully");
+    } catch (error) {
+      console.error("Error adding Undeadz:", error);
+    }
+  };
+
   return (
     <WalletInputContext.Provider
       value={{
@@ -134,6 +182,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         ownedData,
         setOwnedData,
         getOwned,
+        handleAddUndeadz, // Add the new function to the context value
       }}
     >
       {children}

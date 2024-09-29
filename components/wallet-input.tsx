@@ -62,6 +62,10 @@ export function WalletInput() {
     }
   };
 
+  const handleAddUndeadz = async () => {
+    console.log("Need to add UNDEADZ");
+  };
+
   return (
     <div className="w-full flex flex-col items-center gap-3">
       <div className="flex w-full max-w-sm items-center space-x-2 space-y-6 flex-col">

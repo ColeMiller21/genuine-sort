@@ -8,7 +8,7 @@ import { SpinBox } from "@/components/animation/spin-box";
 export default function Home() {
   const { displayGrid } = useWalletInput();
   return (
-    <main className="flex min-h-screen flex-col gap-8 items-center p-12 w-full max-w-5xl">
+    <main className="flex min-h-screen flex-col items-center justify-between p-12 w-full mx-auto max-w-8xl">
       <SpinBox />
       {!displayGrid ? (
         <>

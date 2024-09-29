@@ -55,7 +55,7 @@ export function DisplayOwned() {
 }
 
 const CaptureBackBar = ({ handleCaptureClick, capturing }: any) => {
-  const { toggleGridDisplay } = useWalletInput();
+  const { toggleGridDisplay, handleAddUndeadz } = useWalletInput();
 
   return (
     <div className="w-full lg:w-[80%] flex items-center gap-1 text-sm justify-between">
@@ -66,7 +66,18 @@ const CaptureBackBar = ({ handleCaptureClick, capturing }: any) => {
         <Icons.arrowLeft className="h-4 w-4 " />
         Back
       </span>
-      <div className="flex flex-col gap-2 items-center">
+      <div className="flex flex-col-reverse md:flex-row gap-2 items-center">
+        <Button
+          onClick={handleAddUndeadz}
+          className="flex items-center rounded-full border-primary bg-[#E8C00B] hover:bg-[#E8C00B]/80"
+          variant={"outline"}
+        >
+          <img
+            src="/UNDEADZ_LOGO.png"
+            alt="Undeadz Logo"
+            className="w-[75px] aspect-video"
+          />
+        </Button>
         <Button
           onClick={handleCaptureClick}
           className="flex items-center rounded-full border-primary"
