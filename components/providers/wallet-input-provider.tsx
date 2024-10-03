@@ -14,6 +14,7 @@ import {
   storeDataInStorage,
 } from "@/lib/utils";
 import { OwnedNft } from "alchemy-sdk";
+import { BASE_UNDEADZ_URL } from "@/lib/utils";
 
 export type WalletAddressData = {
   address: string;
@@ -148,22 +149,61 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
 
       setOwnedData((prevData) => {
         const newData = [...prevData];
-        allUndeadz.forEach((undeadz) => {
-          const matchingIndex = newData.findIndex(
-            (nft: any) =>
-              nft.tokenId === undeadz.tokenId &&
-              nft?.collection.name !== "UNDEADZ"
+        const existingNames = new Set(newData.map((item) => item.name));
+
+        // Process existing ownedData for UNDEADZ trait
+        newData.forEach((item) => {
+          const undeadzTrait = item.raw.metadata?.attributes?.find(
+            (attr: any) => attr.trait_type === "UNDEADZ"
           );
 
-          if (matchingIndex !== -1) {
-            // Insert the Undeadz next to the original
-            newData.splice(matchingIndex + 1, 0, undeadz);
-          } else {
-            // If no match found, add to the end
-            newData.push(undeadz);
+          if (undeadzTrait && undeadzTrait.value === "TRUE") {
+            const undeadzName = `UNDEADZ #${item.tokenId}`;
+            if (!existingNames.has(undeadzName)) {
+              const undeadzCopy = JSON.parse(JSON.stringify(item)); // Deep copy
+              undeadzCopy.image.cachedUrl = `${BASE_UNDEADZ_URL}${item.raw.metadata.edition}.png`;
+              undeadzCopy.name = undeadzName;
+
+              // Remove the UNDEADZ trait from the copied object
+              if (
+                undeadzCopy.raw.metadata &&
+                undeadzCopy.raw.metadata.attributes
+              ) {
+                undeadzCopy.raw.metadata.attributes =
+                  undeadzCopy.raw.metadata.attributes.filter(
+                    (attr: any) => attr.trait_type !== "UNDEADZ"
+                  );
+              }
+
+              newData.push(undeadzCopy);
+              existingNames.add(undeadzName);
+            }
           }
         });
-        console.log({ newData });
+
+        // Add new Undeadz
+        allUndeadz.forEach((undeadz) => {
+          const undeadzName = `UNDEADZ #${undeadz.tokenId}`;
+          if (!existingNames.has(undeadzName)) {
+            const matchingIndex = newData.findIndex(
+              (nft: any) =>
+                nft.tokenId === undeadz.tokenId &&
+                nft?.collection.name !== "UNDEADZ"
+            );
+
+            undeadz.name = undeadzName;
+
+            if (matchingIndex !== -1) {
+              // Insert the Undeadz next to the original
+              newData.splice(matchingIndex + 1, 0, undeadz);
+            } else {
+              // If no match found, add to the end
+              newData.push(undeadz);
+            }
+            existingNames.add(undeadzName);
+          }
+        });
+
         return newData;
       });
 

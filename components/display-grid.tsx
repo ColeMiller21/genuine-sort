@@ -113,9 +113,9 @@ export function DisplayGrid({ gridRef }: { gridRef: React.RefObject<any> }) {
   const filteredOwnedData = ownedData.filter((nft: OwnedNft) => {
     switch (nftFilter) {
       case "undeadz":
-        return nft.collection?.name === "UNDEADZ";
+        return nft?.name?.includes("UNDEADZ");
       case "gu":
-        return nft.collection?.name !== "UNDEADZ";
+        return !nft?.name?.includes("UNDEADZ");
       case "both":
       default:
         return true;
