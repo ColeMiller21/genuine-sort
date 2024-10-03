@@ -78,6 +78,7 @@ const CaptureBackBar = ({ handleCaptureClick, capturing }: any) => {
             alt="Undeadz Logo"
             width={75}
             height={75 * (9 / 16)}
+            quality={100}
             className="aspect-video"
             priority
           />
