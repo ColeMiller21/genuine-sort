@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useState, useRef } from "react";
 import { captureScreenshot } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -72,10 +73,13 @@ const CaptureBackBar = ({ handleCaptureClick, capturing }: any) => {
           className="flex items-center rounded-full border-primary bg-[#E8C00B] hover:bg-[#E8C00B]/80"
           variant={"outline"}
         >
-          <img
+          <Image
             src="/UNDEADZ_LOGO.png"
             alt="Undeadz Logo"
-            className="w-[75px] aspect-video"
+            width={75}
+            height={75 * (9 / 16)}
+            className="aspect-video"
+            priority
           />
         </Button>
         <Button

@@ -227,3 +227,6 @@ export function formatLookupToTraitType(lookup: string) {
   }
   return rv;
 }
+
+export const BASE_UNDEADZ_URL =
+  "https://gufiles.art/images/un/un_download_png/";
