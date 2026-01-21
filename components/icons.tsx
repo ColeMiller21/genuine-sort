@@ -9,6 +9,8 @@ import {
   RotateCcw,
   Filter,
   Download,
+  X,
+  Image,
 } from "lucide-react";
 
 export const Icons = {
@@ -21,6 +23,8 @@ export const Icons = {
   reset: RotateCcw,
   filter: Filter,
   download: Download,
+  close: X,
+  image: Image,
   discord: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

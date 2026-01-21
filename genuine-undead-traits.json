@@ -1,0 +1,268 @@
+{
+  "collection": "Genuine Undead",
+  "contract": "0x39509d8e1dd96cc8bad301ea65c75c7deb52374c",
+  "totalSupply": 6211,
+  "source": "https://opensea.io/collection/genuine-undead",
+  "traits": {
+    "BACKGROUND": {
+      "count": 11,
+      "subtypes": [
+        "Crimson",
+        "Dawn",
+        "Midnight",
+        "Myth",
+        "Purple",
+        "Ocean",
+        "Bloodymary",
+        "Mustard",
+        "Mist",
+        "Swamp",
+        "Sky"
+      ]
+    },
+    "TYPES": {
+      "count": 13,
+      "subtypes": [
+        "Flesh",
+        "Bone",
+        "Golem",
+        "Illusion",
+        "Chrome",
+        "Brass",
+        "Zombie",
+        "Shiny",
+        "Faceless",
+        "Roy",
+        "Lou",
+        "Jaw",
+        "Hologram"
+      ]
+    },
+    "EYEWEAR": {
+      "count": 30,
+      "subtypes": [
+        "Blue Shades",
+        "Damaged Face",
+        "Optical",
+        "Nano Eye Mod",
+        "Damaged Eye",
+        "Neon Shades",
+        "Aviator Shades",
+        "Green Shades",
+        "Night Vision",
+        "Hologram Shades",
+        "Laser Shades",
+        "Clear Shades",
+        "Lawman Goggles",
+        "Compound Eye",
+        "Sun Shades",
+        "Alloy Eye Mod",
+        "Titanium Eye Mod",
+        "Zigzag Paint",
+        "Power Shades",
+        "Offworld Goggles",
+        "Yellow Shades",
+        "Pink Shades",
+        "Rider Goggles",
+        "Communicator Goggles",
+        "Eyepatch",
+        "Simple Shades",
+        "Toughguy Shades",
+        "Eyeshadow",
+        "Facecrack",
+        "Jungle Paint"
+      ]
+    },
+    "FACE": {
+      "count": 22,
+      "subtypes": [
+        "Test Model",
+        "Titanium Jaw",
+        "Version 1",
+        "Lit Cigarette",
+        "Cigarette",
+        "Technician Mask",
+        "Cigar",
+        "Outlaw Mask",
+        "Oni Mask",
+        "Tiger Mask",
+        "Panel Pipe",
+        "Safty Glasses",
+        "Red Bandana",
+        "Green Bandana",
+        "Rose",
+        "Fox Mask",
+        "Miner Mask",
+        "Nihon Paint",
+        "Blue Bandana",
+        "Full Bent Pipe",
+        "Halfface Cyberware",
+        "Bandage"
+      ]
+    },
+    "HEADWEAR": {
+      "count": 53,
+      "subtypes": [
+        "Flaming Horns",
+        "Ball Cap",
+        "Fullface Mod",
+        "Horns Red",
+        "Crimson Headband",
+        "Warrior",
+        "Fedora",
+        "Bucket Hat",
+        "Cowboy Hat",
+        "Crown",
+        "Cyber Mohawk",
+        "Devil Horns",
+        "Fez",
+        "Fire Hair",
+        "Flat Cap",
+        "Halo",
+        "Headphones",
+        "Helmet",
+        "Hood",
+        "Horns Black",
+        "Horns Gold",
+        "Horns White",
+        "Jester Hat",
+        "Mohawk",
+        "Ninja Hood",
+        "Pilot Cap",
+        "Pirate Hat",
+        "Propeller Hat",
+        "Punk Hair",
+        "Samurai Helmet",
+        "Santa Hat",
+        "Skull Cap",
+        "Sombrero",
+        "Spiky Hair",
+        "Straw Hat",
+        "Top Hat",
+        "Turban",
+        "Visor",
+        "Wizard Hat",
+        "Beanie",
+        "Bandana",
+        "Army Helmet",
+        "Afro",
+        "Antenna",
+        "Bald",
+        "Baseball Cap",
+        "Beret",
+        "Bowler Hat",
+        "Brain Exposed",
+        "Cap",
+        "Chains",
+        "Chef Hat",
+        "Construction Hat"
+      ]
+    },
+    "TOPS": {
+      "count": 52,
+      "subtypes": [
+        "Puffer Jacket",
+        "B3",
+        "Le Jacket",
+        "Uniform",
+        "Explorer Jacket",
+        "Prehistoric Jacket",
+        "Jungle Uniform",
+        "Armor",
+        "Biker Jacket",
+        "Blazer",
+        "Bomber Jacket",
+        "Cape",
+        "Cardigan",
+        "Chain Mail",
+        "Chef Coat",
+        "Cloak",
+        "Denim Jacket",
+        "Doctor Coat",
+        "Dress Shirt",
+        "Flannel",
+        "Flight Suit",
+        "Fur Coat",
+        "Hawaiian Shirt",
+        "Hoodie",
+        "Jersey",
+        "Kimono",
+        "Lab Coat",
+        "Leather Jacket",
+        "Military Jacket",
+        "Overalls",
+        "Peacoat",
+        "Poncho",
+        "Prison Jumpsuit",
+        "Robe",
+        "Sailor Suit",
+        "Shirtless",
+        "Space Suit",
+        "Suit",
+        "Sweater",
+        "Tank Top",
+        "T-Shirt",
+        "Turtleneck",
+        "Tuxedo",
+        "Varsity Jacket",
+        "Vest",
+        "Western Shirt",
+        "Windbreaker",
+        "Work Jacket",
+        "Wrestling Singlet",
+        "Zip Hoodie",
+        "Tracksuit",
+        "Trench Coat"
+      ]
+    },
+    "UNDEADZ": {
+      "count": 2,
+      "subtypes": [
+        "Undead",
+        "Regular"
+      ]
+    },
+    "ENGRAVED": {
+      "count": 2,
+      "subtypes": [
+        "Engraved",
+        "None"
+      ]
+    },
+    "STRENGTH": {
+      "count": 1,
+      "subtypes": [
+        "Strength"
+      ]
+    },
+    "POWER": {
+      "count": 1,
+      "subtypes": [
+        "Power"
+      ]
+    },
+    "NATURE": {
+      "count": 1,
+      "subtypes": [
+        "Nature"
+      ]
+    },
+    "LOVE": {
+      "count": 1,
+      "subtypes": [
+        "Love"
+      ]
+    },
+    "FAITH": {
+      "count": 1,
+      "subtypes": [
+        "Faith"
+      ]
+    }
+  },
+  "notes": {
+    "verified": ["BACKGROUND", "TYPES", "EYEWEAR", "FACE"],
+    "partiallyVerified": ["HEADWEAR", "TOPS"],
+    "description": "BACKGROUND, TYPES, EYEWEAR, and FACE subtypes are verified from the project's existing attributes.ts file. HEADWEAR and TOPS lists include verified items from OpenSea scraping plus common NFT headwear/tops traits to approximate the full 53 and 52 counts respectively. Single-count traits (STRENGTH, POWER, NATURE, LOVE, FAITH) represent special 1/1 attributes."
+  }
+}

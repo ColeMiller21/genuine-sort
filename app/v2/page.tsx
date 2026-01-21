@@ -3,15 +3,15 @@ import Link from 'next/link'
 import { useWalletInput } from '@/components/providers/wallet-input-provider'
 import { WalletInput } from '@/components/wallet-input'
 import { WalletInputTable } from '@/components/wallet-input-table'
-import { DisplayOwned } from '@/components/display-owned'
+import { DisplayOwnedV2 } from '@/components/display-owned-v2'
 import { SpinBox } from '@/components/animation/spin-box'
 
-export default function Home() {
+export default function SorterV2() {
   const { displayGrid } = useWalletInput()
   return (
     <main className="flex min-h-screen flex-col items-center p-6 md:p-12 w-full mx-auto max-w-8xl">
-      {displayGrid && <GalleryHeader currentVersion="v1" />}
-      {!displayGrid && <GalleryHeader currentVersion="v1" />}
+      {displayGrid && <GalleryHeader currentVersion="v2" />}
+      {!displayGrid && <GalleryHeader currentVersion="v2" />}
       <SpinBox />
       {!displayGrid ? (
         <div className="flex flex-col w-full items-center gap-8 mt-8">
@@ -19,7 +19,7 @@ export default function Home() {
           <WalletInputTable />
         </div>
       ) : (
-        <DisplayOwned />
+        <DisplayOwnedV2 />
       )}
     </main>
   )

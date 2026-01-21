@@ -6,8 +6,8 @@ import { Inter as FontSans } from "next/font/google";
 import { Providers } from "@/components/providers/providers";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icons } from "@/components/icons";
-import { TipButton } from "@/components/TipButton";
 import { Toaster } from "@/components/ui/sonner";
+import { FooterTip } from "@/components/footer-tip";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -34,7 +34,7 @@ export default function RootLayout({
         )}
       >
         <Providers>
-          <div className="w-screen flex flex-col max-w-[1400px] items-center">
+          <div className="w-screen flex flex-col max-w-[1400px] items-center min-h-screen">
             <nav className="w-full flex items-center justify-between py-3 px-4">
               <Link href="https://www.genuineundead.io/">
                 <div className={`z-101 flex items-center w-[35px] h-[35px] `}>
@@ -45,22 +45,24 @@ export default function RootLayout({
                   />
                 </div>
               </Link>
-              <div className="flex flex-col-reverse items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold">Created by b0nes</span>
-                  <a
-                    href="https://twitter.com/b0nesFAFZ"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Icons.x className="w-5 h-5 cursor-pointer hover:scale-110 transition-all duration-150" />
-                  </a>
-                </div>
-                <TipButton />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold">Created by b0nes</span>
+                <a
+                  href="https://twitter.com/b0nesFAFZ"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Icons.x className="w-5 h-5 cursor-pointer hover:scale-110 transition-all duration-150" />
+                </a>
               </div>
               <ThemeToggle />
             </nav>
-            {children}
+            <div className="flex-1 w-full">
+              {children}
+            </div>
+            <footer className="w-full py-6 mt-auto">
+              <FooterTip />
+            </footer>
           </div>
           <Toaster />
         </Providers>
