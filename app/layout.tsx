@@ -48,7 +48,7 @@ export default function RootLayout({
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold">Created by b0nes</span>
                 <a
-                  href="https://twitter.com/b0nesFAFZ"
+                  href="https://x.com/bOnez_DV"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
