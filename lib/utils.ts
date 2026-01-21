@@ -142,14 +142,62 @@ export const captureScreenshot = async (
     console.error("The target div element is not found.");
     return;
   }
+  
   try {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 100);
+    // Wait for all images to be fully loaded
+    const images = divRef.current.querySelectorAll('img');
+    await Promise.all(
+      Array.from(images).map((img) => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.onload = resolve;
+          img.onerror = resolve;
+        });
+      })
+    );
+
+    // Small delay to ensure rendering is complete
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Get the actual dimensions of the element
+    const rect = divRef.current.getBoundingClientRect();
+    const width = divRef.current.scrollWidth;
+    const height = divRef.current.scrollHeight;
+
+    // Calculate optimal pixel ratio (2x for quality, but cap for very large grids)
+    const totalPixels = width * height;
+    const maxPixels = 16000 * 16000; // Max canvas size
+    let pixelRatio = 2;
+    
+    if (totalPixels * pixelRatio * pixelRatio > maxPixels) {
+      pixelRatio = Math.sqrt(maxPixels / totalPixels);
+      pixelRatio = Math.max(1, Math.floor(pixelRatio * 10) / 10);
+    }
+
+    const dataUrl = await toPng(divRef.current, {
+      quality: 0.95,
+      pixelRatio: pixelRatio,
+      width: width,
+      height: height,
+      cacheBust: true,
+      includeQueryParams: true,
+      skipAutoScale: true,
+      filter: (node) => {
+        // Skip any hidden elements or loading placeholders
+        if (node instanceof HTMLElement) {
+          const style = window.getComputedStyle(node);
+          if (style.display === 'none' || style.visibility === 'hidden') {
+            return false;
+          }
+        }
+        return true;
+      },
     });
-    const dataUrl = await toPng(divRef.current, { includeQueryParams: true });
+    
     return dataUrl;
   } catch (error) {
     console.error("Error capturing screenshot:", error);
+    throw error;
   }
 };
 

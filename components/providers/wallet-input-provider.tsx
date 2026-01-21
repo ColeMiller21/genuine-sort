@@ -37,6 +37,7 @@ interface WalletInputContextType {
   setOwnedData: Dispatch<SetStateAction<OwnedNft[]>>;
   getOwned: (data: any) => any;
   handleAddUndeadz: () => void;
+  handleRemoveUndeadz: () => void;
   hasUndeadz: boolean;
   setHasUndeadz: Dispatch<SetStateAction<boolean>>;
 }
@@ -214,6 +215,14 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
     }
   };
 
+  const handleRemoveUndeadz = () => {
+    setOwnedData((prevData) => 
+      prevData.filter((nft) => !nft?.name?.includes('UNDEADZ'))
+    );
+    setHasUndeadz(false);
+    console.log("Undeadz removed");
+  };
+
   return (
     <WalletInputContext.Provider
       value={{
@@ -227,6 +236,7 @@ export function WalletInputProvider({ children }: WalletInputProviderProps) {
         setOwnedData,
         getOwned,
         handleAddUndeadz,
+        handleRemoveUndeadz,
         hasUndeadz,
         setHasUndeadz,
       }}
