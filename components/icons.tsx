@@ -11,6 +11,7 @@ import {
   Download,
   X,
   Image,
+  Check,
 } from "lucide-react";
 
 export const Icons = {
@@ -25,6 +26,7 @@ export const Icons = {
   download: Download,
   close: X,
   image: Image,
+  check: Check,
   discord: (props: LucideProps) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"

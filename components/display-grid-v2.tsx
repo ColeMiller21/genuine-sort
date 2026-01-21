@@ -32,8 +32,21 @@ type GridSettings = {
   showLabels: boolean
 }
 
+type CustomImage = {
+  id: string
+  src: string
+  position: number // index in the grid where it starts
+  size: '3x1' // spans 3 columns
+}
+
 const MAIN_TRAITS = ['BACKGROUND', 'TYPES', 'EYEWEAR', 'FACE', 'HEADWEAR', 'TOPS']
 const SORT_OPTIONS = ['Token ID', 'BACKGROUND', 'TYPES', 'EYEWEAR', 'FACE', 'HEADWEAR', 'TOPS']
+
+// Predefined images that can be added to the grid
+const ALLOWED_IMAGES = [
+  { id: 'gu_white', src: '/gu_white_text.png', label: 'White Text', forDark: true },
+  { id: 'gu_black', src: '/gu_black_text.png', label: 'Black Text', forDark: false },
+]
 
 export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -53,8 +66,28 @@ export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
     showLabels: false
   })
   const [settingsBeforeEdit, setSettingsBeforeEdit] = useState<GridSettings | null>(null)
+  const [customImages, setCustomImages] = useState<CustomImage[]>([])
+  const [imagePlacementOpen, setImagePlacementOpen] = useState(false)
+  const [actualGridCols, setActualGridCols] = useState(6)
 
   const { ownedData } = useWalletInput()
+
+  // Calculate actual grid columns based on container width
+  useEffect(() => {
+    const calculateColumns = () => {
+      if (!containerRef.current) return
+      const containerWidth = containerRef.current.offsetWidth - 32 // subtract padding
+      const cardSize = gridSettings.cardSize
+      const gap = gridSettings.gap
+      // Calculate how many cards fit in a row
+      const cols = Math.floor((containerWidth + gap) / (cardSize + gap))
+      setActualGridCols(Math.max(1, cols))
+    }
+
+    calculateColumns()
+    window.addEventListener('resize', calculateColumns)
+    return () => window.removeEventListener('resize', calculateColumns)
+  }, [gridSettings.cardSize, gridSettings.gap])
 
   const processedNfts = useMemo(() => {
     let result = [...ownedData]
@@ -236,6 +269,10 @@ export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
             <Icons.filter className="h-3 w-3 mr-1" />
             Grid
           </Button>
+          <Button variant="outline" size="sm" onClick={() => setImagePlacementOpen(true)} className="border-[#ff5277]/30 hover:border-[#ff5277]/60">
+            <Icons.image className="h-3 w-3 mr-1" />
+            Add Logo
+          </Button>
         </div>
       </div>
 
@@ -244,6 +281,7 @@ export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
         <span>
           Showing <strong className="text-[#ff5277]">{processedNfts.length}</strong>
           {processedNfts.length !== ownedData.length && <span> of {ownedData.length}</span>} NFTs
+          {customImages.length > 0 && <span className="text-[#ff5277]"> + {customImages.length} custom</span>}
         </span>
         <span className="text-xs">Sorted by {sortConfig.trait} ({sortConfig.order === 'asc' ? 'A→Z' : 'Z→A'})</span>
       </div>
@@ -266,15 +304,76 @@ export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
           } as React.CSSProperties}
           id="display-grid-v2"
         >
-          {processedNfts.map((nft, i) => (
-            <div
-              key={nft.tokenId || i}
-              className="nft-card relative aspect-square cursor-pointer rounded-lg overflow-hidden bg-muted transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_8px_24px_rgba(255,82,119,0.25)]"
-              onClick={() => setExpandedNft(nft)}
-            >
-              <NFTCardContent nft={nft} showLabel={gridSettings.showLabels} />
-            </div>
-          ))}
+          {(() => {
+            // Build merged grid items (NFTs + custom images at specific positions)
+            const items: React.ReactNode[] = []
+            let nftIndex = 0
+            const customImagePositions = new Map(customImages.map(img => [img.position, img]))
+            const totalSlots = processedNfts.length + customImages.length
+
+            for (let i = 0; i < totalSlots && nftIndex < processedNfts.length; i++) {
+              const customImg = customImagePositions.get(i)
+              if (customImg) {
+                // 3x1: spans 3 columns, 1 row
+                const spanCols = 3
+                const spanRows = 1
+                items.push(
+                  <div
+                    key={`custom-${customImg.id}`}
+                    className="relative rounded-lg overflow-hidden transition-all duration-200 hover:scale-[1.01] hover:shadow-[0_8px_24px_rgba(255,82,119,0.25)] group"
+                    style={{
+                      gridColumn: `span ${spanCols}`,
+                      gridRow: `span ${spanRows}`,
+                      aspectRatio: '3 / 1',
+                      backgroundColor: 'transparent',
+                    }}
+                  >
+                    <Image
+                      src={customImg.src}
+                      alt="Custom image"
+                      fill
+                      className="object-contain"
+                      sizes={`${gridSettings.cardSize * spanCols}px`}
+                      unoptimized={customImg.src.startsWith('data:')}
+                    />
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setCustomImages(prev => prev.filter(img => img.id !== customImg.id)) }}
+                      className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center bg-black/70 hover:bg-destructive text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Icons.close className="h-3 w-3" />
+                    </button>
+                  </div>
+                )
+              } else {
+                const nft = processedNfts[nftIndex]
+                items.push(
+                  <div
+                    key={nft.tokenId || nftIndex}
+                    className="nft-card relative aspect-square cursor-pointer rounded-lg overflow-hidden bg-muted transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_8px_24px_rgba(255,82,119,0.25)]"
+                    onClick={() => setExpandedNft(nft)}
+                  >
+                    <NFTCardContent nft={nft} showLabel={gridSettings.showLabels} />
+                  </div>
+                )
+                nftIndex++
+              }
+            }
+            // Add remaining NFTs
+            while (nftIndex < processedNfts.length) {
+              const nft = processedNfts[nftIndex]
+              items.push(
+                <div
+                  key={nft.tokenId || nftIndex}
+                  className="nft-card relative aspect-square cursor-pointer rounded-lg overflow-hidden bg-muted transition-all duration-200 hover:scale-[1.03] hover:shadow-[0_8px_24px_rgba(255,82,119,0.25)]"
+                  onClick={() => setExpandedNft(nft)}
+                >
+                  <NFTCardContent nft={nft} showLabel={gridSettings.showLabels} />
+                </div>
+              )
+              nftIndex++
+            }
+            return items
+          })()}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-muted-foreground bg-card/30 rounded-2xl border border-dashed border-border">
@@ -315,6 +414,18 @@ export function DisplayGridV2({ gridRef }: { gridRef: React.RefObject<any> }) {
 
       {expandedNft && (
         <NFTModal nft={expandedNft} attributes={getAttributes(expandedNft)} onClose={() => setExpandedNft(null)} />
+      )}
+
+      {imagePlacementOpen && (
+        <ImagePlacementModal
+          nftCount={processedNfts.length}
+          existingImage={customImages[0] || null}
+          gridBgColor={gridSettings.bgColor}
+          gridColumns={actualGridCols}
+          onAdd={(newImage) => { setCustomImages([newImage]); setImagePlacementOpen(false) }}
+          onRemove={() => setCustomImages([])}
+          onClose={() => setImagePlacementOpen(false)}
+        />
       )}
     </div>
   )
@@ -761,6 +872,197 @@ function NFTModal({ nft, attributes, onClose }: NFTModalProps) {
                   </div>
                 ))}
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+interface ImagePlacementModalProps {
+  nftCount: number
+  existingImage: CustomImage | null
+  gridBgColor: string
+  gridColumns: number
+  onAdd: (image: CustomImage) => void
+  onRemove: () => void
+  onClose: () => void
+}
+
+function ImagePlacementModal({ nftCount, existingImage, gridBgColor, gridColumns, onAdd, onRemove, onClose }: ImagePlacementModalProps) {
+  // Determine preview background - use grid color, fallback to a neutral if transparent
+  const previewBg = gridBgColor === 'transparent' ? 'var(--card)' : gridBgColor
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [selectedPosition, setSelectedPosition] = useState<number | null>(null)
+
+  // Use the actual grid columns from the real grid
+  const gridCols = Math.max(3, gridColumns) // Minimum 3 cols to fit the logo
+  const totalSlots = Math.max(nftCount + (existingImage ? 3 : 0), gridCols * 2) // At least 2 rows
+  const gridRows = Math.ceil(totalSlots / gridCols)
+
+  // Check if position is valid for 3x1 image (needs 3 consecutive columns)
+  const isValidPosition = (pos: number): boolean => {
+    const col = pos % gridCols
+    // Need 3 consecutive columns
+    if (col > gridCols - 3) return false
+    return true
+  }
+
+  const handleApply = () => {
+    if (!selectedImage || selectedPosition === null) return
+    onAdd({
+      id: `custom-${Date.now()}`,
+      src: selectedImage,
+      position: selectedPosition,
+      size: '3x1'
+    })
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100]" onClick={onClose} />
+      <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
+        <div className="w-full max-w-[600px] bg-card rounded-2xl border border-border shadow-2xl overflow-hidden">
+          <div className="flex items-center justify-between p-4 md:p-5 border-b border-border/50">
+            <div>
+              <h3 className="text-base font-bold">{existingImage ? 'Manage Logo' : 'Add Logo'}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Only 1 logo can be added to the grid</p>
+            </div>
+            <button onClick={onClose} className="flex items-center justify-center w-8 h-8 bg-muted rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive transition-all">
+              <Icons.close className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="p-4 md:p-5 flex flex-col gap-5 max-h-[70vh] overflow-y-auto">
+            {/* Show existing image with remove option */}
+            {existingImage && (
+              <div className="flex flex-col gap-3">
+                <Label className="text-xs font-semibold uppercase text-muted-foreground">Current Logo</Label>
+                <div 
+                  className="relative rounded-lg overflow-hidden border-2 border-[#ff5277]/50" 
+                  style={{ aspectRatio: '3 / 1', backgroundColor: previewBg }}
+                >
+                  <Image src={existingImage.src} alt="Current logo" fill className="object-contain p-2" />
+                  <button
+                    onClick={onRemove}
+                    className="absolute top-2 right-2 px-3 py-1.5 text-xs font-semibold bg-destructive hover:bg-destructive/80 text-white rounded-lg flex items-center gap-1 transition-all"
+                  >
+                    <Icons.close className="h-3 w-3" />
+                    Remove
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">Remove the current logo to add a different one</p>
+              </div>
+            )}
+
+            {/* Image Selection - Only show if no existing image */}
+            {!existingImage && (
+              <div className="flex flex-col gap-3">
+                <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Select Logo <span className="text-muted-foreground/60">({ALLOWED_IMAGES.length} available)</span>
+                </Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[180px] overflow-y-auto p-1">
+                {ALLOWED_IMAGES.map((img) => (
+                  <button
+                    key={img.id}
+                    onClick={() => setSelectedImage(img.src)}
+                    className={`relative rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 ${
+                      selectedImage === img.src 
+                        ? 'border-[#ff5277] ring-2 ring-[#ff5277]/30' 
+                        : 'border-border hover:border-[#ff5277]/50'
+                    }`}
+                    style={{ aspectRatio: '3 / 1', minHeight: '60px', backgroundColor: previewBg }}
+                  >
+                    <Image 
+                      src={img.src} 
+                      alt={img.label} 
+                      fill 
+                      className="object-contain p-2" 
+                    />
+                    <span className="absolute bottom-1 left-2 text-[10px] font-medium px-1.5 py-0.5 bg-black/50 text-white rounded">
+                      {img.label}
+                    </span>
+                    {selectedImage === img.src && (
+                      <div className="absolute top-1 right-1 w-5 h-5 bg-[#ff5277] rounded-full flex items-center justify-center">
+                        <Icons.check className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Preview shows how logo will appear with your current grid background
+              </p>
+              </div>
+            )}
+
+            {/* Grid Position Preview - Only show if no existing image */}
+            {!existingImage && (
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-semibold uppercase text-muted-foreground">
+                    Click to Place
+                    {selectedPosition !== null && <span className="text-[#ff5277] ml-2">• Row {Math.floor(selectedPosition / gridCols) + 1}</span>}
+                  </Label>
+                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded">
+                    {gridCols} columns × {gridRows} rows
+                  </span>
+                </div>
+                <div 
+                  className="grid gap-1 p-3 rounded-lg border border-border/50 max-h-[250px] overflow-y-auto"
+                  style={{ gridTemplateColumns: `repeat(${gridCols}, 1fr)`, backgroundColor: previewBg }}
+                >
+                  {Array.from({ length: gridRows * gridCols }).map((_, i) => {
+                    const isNftSlot = i < nftCount
+                    const isSelected = selectedPosition === i
+                    const canPlace = isValidPosition(i)
+
+                    // Check if this slot is part of the 3x1 selection
+                    let isPartOfSelection = false
+                    if (selectedPosition !== null) {
+                      if (i === selectedPosition + 1 || i === selectedPosition + 2) isPartOfSelection = true
+                    }
+
+                    return (
+                      <button
+                        key={i}
+                        disabled={!canPlace}
+                        onClick={() => setSelectedPosition(i)}
+                        className={`aspect-square rounded transition-all text-[8px] font-bold ${
+                          isSelected || isPartOfSelection
+                            ? 'bg-[#ff5277] text-white ring-2 ring-[#ff5277]/50'
+                            : isNftSlot
+                            ? 'bg-muted/60 border border-border/40 hover:border-[#ff5277]/50 hover:bg-[#ff5277]/10'
+                            : canPlace
+                            ? 'bg-muted/30 border border-dashed border-border/30 hover:border-[#ff5277]/50 hover:bg-[#ff5277]/10'
+                            : 'bg-muted/20 border border-dashed border-border/20 cursor-not-allowed opacity-40'
+                        }`}
+                      >
+                        {isNftSlot && !isSelected && !isPartOfSelection ? '' : ''}
+                      </button>
+                    )
+                  })}
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  <span className="inline-block w-3 h-3 bg-muted/60 border border-border/40 rounded mr-1 align-middle"></span> Your {nftCount} NFTs
+                  <span className="mx-2">•</span>
+                  Logo spans 3 of {gridCols} columns
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-2.5 p-4 md:p-5 border-t border-border/50">
+            <Button variant="outline" onClick={onClose}>{existingImage ? 'Close' : 'Cancel'}</Button>
+            {!existingImage && (
+              <Button 
+                onClick={handleApply} 
+                disabled={!selectedImage || selectedPosition === null}
+                className="bg-[#ff5277] hover:bg-[#e8486b] disabled:opacity-50"
+              >
+                Add to Grid
+              </Button>
             )}
           </div>
         </div>
